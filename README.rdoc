@@ -1,0 +1,17 @@
+== SocialContactCenter
+
+=== Overview
+This is a prototype backend application to power a Social Contact Center with Twitter and Tropo.
+
+=== Requirements
+* Ruby 1.8.6+ or JRuby 1.4.0+
+* Tropo Account and Credentials
+* Amazon Web Services Account and Credentials for SQS
+
+=== Installing
+Coming soon
+
+=== Author
+* Voxeo Labs / Tropo Collaboration with Orange Labs, SSF
+* Jason Goecke - VP of Innovation @ Voxeo Labs (jsgoecke@voxeo.com)
+

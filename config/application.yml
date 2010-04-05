@@ -1,0 +1,33 @@
+amazon:
+    aws_access_key:
+    aws_secret_access_key:
+    call_queue:
+    agent_queue:
+
+twitter:
+    username: squirrelrific
+    password: squirrelsrock
+    keywords: squirrelrific
+
+sinatra:
+    port: 4567
+
+agents:
+    - name: John Doe
+      phone: +14157044517
+    - name: Jane Smith
+      phone: +14153675082
+      
+users:
+    - name:
+      phone:
+      twitter_user:
+    - name:
+      phone:
+      twitter_user:
+    - name:
+      phone:
+      twitter_user:
+
+queue:
+    timer: 1
