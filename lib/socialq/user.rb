@@ -79,6 +79,12 @@ module SocialQ
       @twitter_thread.kill!
     end
     
+    ##
+    #
+    #
+    def fetch_twitter_id(user)
+    end
+    
     private
     
     ##
