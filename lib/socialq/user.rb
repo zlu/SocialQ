@@ -1,11 +1,7 @@
-module SocialQ
-  require 'aasm'
-  require 'tweetstream'
-  
+module SocialQ  
   class User
     
     class Topsy
-      require 'httparty'
       include HTTParty
     
       base_uri 'http://otter.topsy.com'
@@ -15,6 +11,22 @@ module SocialQ
       def self.author_info(twitter_id)
         response = get("/authorinfo.json?url=http://twitter.com/#{twitter_id}")
         response['response']
+      end
+    end
+    
+    class Twitter
+      include HTTParty
+    
+      base_uri 'http://api.twitter.com'
+      default_params :output => 'json'
+      
+      def initialize(uname, passwd)
+        @auth = { :username => uname, :password => passwd }
+      end
+      
+      def get_user(user)
+        result = self.class.get("/1/users/lookup.json?screen_name=#{user}", :basic_auth => @auth)
+        result[0] if result[0]
       end
     end
     
@@ -29,7 +41,7 @@ module SocialQ
       @time = Time.now
     end
     
-    attr_reader :name, :twitter_user, :phone_number, :channel, :time, :agent, :tweet_watchword, :tweet_count, :social_influence_rank
+    attr_reader :name, :phone_number, :channel, :time, :agent, :twitter_user, :tweet_watchword, :tweet_count, :twitter_profile, :social_influence_rank
     
     ##
     # Creates a User object
@@ -59,6 +71,9 @@ module SocialQ
       @twitter_password   = options[:twitter_password]
       @twitter_watchwords = options[:twitter_watchwords]
       
+      # Handle Twitter details
+      twitter = Twitter.new(@twitter_username, @twitter_password)
+      @twitter_profile = twitter.get_user(options[:twitter_user])
       launch_twitter_listener
     end
     
@@ -79,12 +94,6 @@ module SocialQ
       @twitter_thread.kill!
     end
     
-    ##
-    #
-    #
-    def fetch_twitter_id(user)
-    end
-    
     private
     
     ##
@@ -100,7 +109,7 @@ module SocialQ
     def launch_twitter_listener
       @twitter_thread = Thread.new do
         client = TweetStream::Client.new(@twitter_username, @twitter_password)
-        client.follow(@twitter_user) do |tweet|
+        client.follow(@twitter_profile['id']) do |tweet|
           # If we get a matching word on our watchlist lets set the user watchword triggered
           @twitter_watchwords.each { |word| twitter_alert!(word) if tweet.match(word) != nil }
         end

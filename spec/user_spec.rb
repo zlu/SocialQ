@@ -9,12 +9,24 @@ describe SocialQ::User::Topsy do
   end
 end
 
+describe SocialQ::User::Twitter do
+  it "should fetch user details from twitter" do
+    config = YAML.load(File.open('config/application.yml'))
+    twitter = SocialQ::User::Twitter.new(config['twitter']['username'], config['twitter']['password'])
+    user = twitter.get_user('barackobama')
+    user['name'].should == 'Barack Obama'
+  end
+end
+
 describe SocialQ::User do
   before(:all) do
-    @agent = SocialQ::User.new({ :name         => 'Barack Obama', 
-                                         :twitter_user => 'barackobama', 
-                                         :phone_number => '+14155551212',
-                                         :channel      => 'twitter' })
+    config = YAML.load(File.open('config/application.yml'))
+    @user = SocialQ::User.new({ :name             => 'Barack Obama', 
+                                :twitter_user     => 'barackobama', 
+                                :phone_number     => '+14155551212',
+                                :channel          => 'twitter',
+                                :twitter_username => config['twitter']['username'],
+                                :twitter_password => config['twitter']['password'] })
   end
   
   it "should raise argument errors if a new user object is created without an option set" do
@@ -43,24 +55,28 @@ describe SocialQ::User do
     end
   end
   
+  it "should populate the twitter_profile method" do
+    @user.twitter_profile['name'].should == 'Barack Obama'
+  end
+
   it "should create a new user object with the appropriate values set" do
-    @agent.name.should == 'Barack Obama'
-    @agent.twitter_user.should == 'barackobama'
-    @agent.phone_number.should == '+14155551212'
+    @user.name.should == 'Barack Obama'
+    @user.twitter_user.should == 'barackobama'
+    @user.phone_number.should == '+14155551212'
   end
   
   it "should have an user object should successfully transition through all of its state" do
-    @agent.start?.should == true
-    @agent.send_call!
-    @agent.on_with_agent?.should == true
+    @user.start?.should == true
+    @user.send_call!
+    @user.on_with_agent?.should == true
   end
   
   it "should set the agent to a new object" do
-    @agent.set_agent :foo => 'bar'
-    @agent.agent.should == { :foo => 'bar' }
+    @user.set_agent :foo => 'bar'
+    @user.agent.should == { :foo => 'bar' }
   end
   
   it "should set the social_influence_rank" do
-    @agent.social_influence_rank.should == 10
+    @user.social_influence_rank.should == 10
   end
 end
