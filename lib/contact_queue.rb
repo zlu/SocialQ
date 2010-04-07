@@ -1,4 +1,4 @@
-module SocialContactCenter
+module SocialQ
   class ContactQueue
     require 'json'
     

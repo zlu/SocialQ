@@ -1,4 +1,4 @@
-module SocialContactCenter
+module SocialQ
   require 'aasm'
   require 'tweetstream'
   

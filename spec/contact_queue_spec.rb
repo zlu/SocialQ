@@ -3,13 +3,13 @@ $: << File.expand_path(File.dirname(__FILE__))
 
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
-describe SocialContactCenter::ContactQueue do
+describe SocialQ::ContactQueue do
   before(:all) do
-    @contact_queue = SocialContactCenter::ContactQueue.new(1)
+    @contact_queue = SocialQ::ContactQueue.new(1)
   end
   
   it 'should create a ContactQueue object' do
-    @contact_queue.instance_of?(SocialContactCenter::ContactQueue) == true
+    @contact_queue.instance_of?(SocialQ::ContactQueue) == true
   end
   
   it 'should add an agent to the agents array' do

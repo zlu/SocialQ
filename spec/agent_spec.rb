@@ -3,20 +3,20 @@ $: << File.expand_path(File.dirname(__FILE__))
 
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
-describe SocialContactCenter::Agent do
+describe SocialQ::Agent do
   before(:all) do
-    @agent = SocialContactCenter::Agent.new({ :name => 'John Doe', :phone_number => '+14155551212' })
+    @agent = SocialQ::Agent.new({ :name => 'John Doe', :phone_number => '+14155551212' })
   end
   
   it "should raise argument errors if a new agent object is created without an option set" do
     begin
-      result = SocialContactCenter::Agent.new({ :foo => :bar })
+      result = SocialQ::Agent.new({ :foo => :bar })
     rescue => e
       e.to_s.should == 'A hash with the :name set is required.'
     end
     
     begin
-      result = SocialContactCenter::Agent.new({ :name => 'John Doe' })
+      result = SocialQ::Agent.new({ :name => 'John Doe' })
     rescue => e
       e.to_s.should == 'A hash with the :phone_number set is required.'
     end
