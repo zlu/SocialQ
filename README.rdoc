@@ -1,4 +1,4 @@
-== SocialContactCenter
+== SocialQ
 
 === Overview
 This is a prototype backend application to power a Social Contact Center with Twitter and Tropo.
