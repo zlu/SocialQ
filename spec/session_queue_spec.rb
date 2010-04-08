@@ -32,4 +32,9 @@ describe SocialQ::SessionQueue do
     JSON.parse(@session_queue.render_json).should == { "agents" => [ { "foo" => "bar"} ] , 
                                                        "users"  => [ { "foo" => "bar" } ] }
   end
+  
+  it 'should have two instance methods that are an SQS queue' do
+    @session_queue.session_sqs.name.should == 'sessions'
+    @session_queue.agent_sqs.name.should == 'agents'
+  end
 end
