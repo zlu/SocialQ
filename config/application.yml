@@ -2,8 +2,8 @@ amazon:
     aws_access_key: 0YSG6K5HPC0KAJHSMPG2
     aws_secret_access_key: R3jcbuwc26wQnUBNQPkaYY53BJu7vGI72w7+phm2
     endpoint: http://queue.amazonaws.com
-    contact_queue: contacts
-    agent_queue: agents
+    session_sqs: sessions
+    agent_sqs: agents
 
 twitter:
     username: squirrelrific

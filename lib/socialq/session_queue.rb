@@ -1,17 +1,26 @@
 module SocialQ
-  class ContactQueue
+  class SessionQueue
     require 'json'
     
-    attr_reader :users, :agents
+    attr_reader :users, :agents, :session_sqs, :agent_sqs
     
     ##
     # Create a new ContactQueue Object
     #
     # @param [required, Integer] timer in seconds to scan the available agents
     # @return [Object] ContactQueue
-    def initialize(timer)
+    def initialize(timer, amazon_options)
       @users  = []
       @agents = []
+      
+      # Setup the Amazon SQS connections
+      client = AWS::SQS::Client.new(amazon_options[:aws_access_key], 
+                                    amazon_options[:aws_secret_access_key], 
+                                    :endpoint => amazon_options[:endpoint])
+      @session_sqs = client.create_queue(amazon_options[:session_sqs])
+      @agent_sqs = client.create_queue(amazon_options[:agent_sqs])
+      
+      # Launch the timer to search for agents
       launch_agent_scanner(timer)
     end
     
