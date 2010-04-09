@@ -4,6 +4,8 @@ amazon:
     endpoint: http://queue.amazonaws.com
     session_sqs: sessions
     agent_sqs: agents
+    db: SocialQ
+    db_attribute: stale_messages
 
 twitter:
     username: squirrelrific
@@ -16,20 +18,20 @@ sinatra:
 agents:
     - name: John Doe
       uname: jdoe
-      phone: +14157044517
+      phone_number: '+14157044517'
     - name: Jane Smith
       uname: jsmith
-      phone: +14153675082
+      phone_number: '+14153675082'
       
 users:
     - name: Lenos Squirrel
-      phone: +14157044517
+      phone_number: '+14157044517'
       twitter_user: LenosSquirrel
     - name:
-      phone:
+      phone_number:
       twitter_user:
     - name:
-      phone:
+      phone_number:
       twitter_user:
 
 queue:

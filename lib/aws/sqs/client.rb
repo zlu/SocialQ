@@ -101,7 +101,7 @@ module AWS
         
         # Construct request
         query = params.collect { |key, value| key + "=" + CGI.escape(value) }.join("&")
-        
+
         # Set our query, keeping in mind that most (not all) actions require a queue name in the URI
         if query["Action"] == "ListQueues" || query["Action"] == "CreateQueue"
           query = "?" + query

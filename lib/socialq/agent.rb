@@ -21,7 +21,7 @@ module SocialQ
       @time = Time.now
     end
     
-    attr_reader :name, :phone_number, :time, :user
+    attr_reader :guid, :name, :phone_number, :time, :user
     
     ##
     # Creates an Agent object
@@ -34,6 +34,7 @@ module SocialQ
       raise ArgumentError, 'A hash with the :name set is required.'         if options[:name] == nil
       raise ArgumentError, 'A hash with the :phone_number set is required.' if options[:phone_number] == nil
       
+      @guid         = UUIDTools::UUID.random_create.to_s
       @name         = options[:name]
       @phone_number = options[:phone_number]
       @time         = Time.now

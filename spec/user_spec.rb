@@ -79,4 +79,8 @@ describe SocialQ::User do
   it "should set the social_influence_rank" do
     @user.social_influence_rank.should == 10
   end
+  
+  it "should have a guid instance method" do
+    @user.guid.should_not == nil
+  end
 end

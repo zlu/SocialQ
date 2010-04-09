@@ -42,4 +42,8 @@ describe SocialQ::Agent do
     @agent.set_user :foo => 'bar'
     @agent.user.should == { :foo => 'bar' }
   end
+  
+  it 'should generate a guid as an instance method' do
+    @agent.guid.should_not == nil
+  end
 end

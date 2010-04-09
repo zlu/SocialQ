@@ -41,7 +41,18 @@ module SocialQ
       @time = Time.now
     end
     
-    attr_reader :name, :phone_number, :channel, :time, :agent, :twitter_user, :tweet_watchword, :tweet_count, :twitter_profile, :social_influence_rank
+    attr_reader :guid,
+                :name, 
+                :phone_number, 
+                :channel, 
+                :time, 
+                :agent, 
+                :twitter_user, 
+                :twitter_keywords, 
+                :tweet_count, 
+                :twitter_profile, 
+                :social_influence_rank,
+                :queue_weight
     
     ##
     # Creates a User object
@@ -57,6 +68,7 @@ module SocialQ
       raise ArgumentError, 'A hash with the :phone_number set is required.' if options[:phone_number] == nil
       raise ArgumentError, 'A hash with the :channel set is required.'      if options[:phone_number] == nil
       
+      @guid                  = UUIDTools::UUID.random_create.to_s
       @name                  = options[:name]
       @twitter_user          = options[:twitter_user]
       @phone_number          = options[:phone_number]
@@ -69,7 +81,7 @@ module SocialQ
       
       @twitter_username   = options[:twitter_username]
       @twitter_password   = options[:twitter_password]
-      @twitter_watchwords = options[:twitter_watchwords]
+      @twitter_keywords   = options[:twitter_keywords]
       
       # Handle Twitter details
       twitter = Twitter.new(@twitter_username, @twitter_password)
