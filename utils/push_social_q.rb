@@ -11,18 +11,18 @@ p bunny
 p '*'*10
 bunny.start
 
-social_q = bunny.queue(config['rabbit_mq']['social_q'])
+social_q = bunny.queue(config['rabbit_mq']['socialq'])
 
 10.times do
   social_q.publish({ :foo => 'bar' }.to_json)
 end
 
-messages = []
-msg = nil
-while msg != :queue_empty
-  msg = social_q.pop[:payload]
-  messages << msg if msg != :queue_empty
-end
-p messages
+# messages = []
+# msg = nil
+# while msg != :queue_empty
+#   msg = social_q.pop[:payload]
+#   messages << msg if msg != :queue_empty
+# end
+# p messages
 
 bunny.stop

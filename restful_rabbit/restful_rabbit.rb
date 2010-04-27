@@ -1,24 +1,28 @@
-%w(rubygems sinatra bunny).each { |lib| require lib }
+%w(rubygems sinatra json bunny).each { |lib| require lib }
 
-@bunny = Bunny.new(:user => 'rabbit0002',
-                   :pass => 'RbIEJfCuMc',
-                   :host => 'ec2-67-202-42-147.compute-1.amazonaws.com',
-                   :port => '15002',
-                   :logging => true)
-@bunny.start
-@social_q = @bunny.queue('social_q')
-@agent_q  = @bunny.queue('agent_q')
+config = YAML.load(File.open('../config/application.yml'))
+bunny = Bunny.new(:user    => config['rabbit_mq']['user'],
+                  :pass    => config['rabbit_mq']['pass'],
+                  :host    => config['rabbit_mq']['host'],
+                  :port    => config['rabbit_mq']['port'],
+                  :vhost   => config['rabbit_mq']['vhost'],
+                  :logging => config['rabbit_mq']['logging'])
+bunny.start
+@@socialq = bunny.queue(config['rabbit_mq']['socialq'])
+@@agentq  = bunny.queue(config['rabbit_mq']['agentq'])
 
 get '/messages' do
   messages = Array.new
   msg = nil
   while msg != :queue_empty
-    msg = @social_q.pop[:payload]
-    messages << msg if msg != :queue_empty
+    msg = @@socialq.pop[:payload]
+    if msg != :queue_empty
+      messages << JSON.parse(msg)
+    end
   end
-  messages
+  messages.to_json
 end
 
 post '/agent_ready' do
-  @agent_q.publish(request.env["rack.input"].read)
+  @@agentq.publish(request.env["rack.input"].read)
 end
