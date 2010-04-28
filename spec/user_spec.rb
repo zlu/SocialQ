@@ -1,4 +1,3 @@
-# billing_bridge_spec.rb
 $: << File.expand_path(File.dirname(__FILE__))
 
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')

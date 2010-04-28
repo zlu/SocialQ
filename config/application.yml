@@ -5,7 +5,7 @@ rabbit_mq:
     host: ec2-67-202-42-147.compute-1.amazonaws.com
     port: 15002
     vhost: /rabbit0002
-    logging: true
+    logging: false
     socialq: socialq # Where we publish the Social Q messages
     agentq: agentq # Where agent requests to take a call get passed
 
