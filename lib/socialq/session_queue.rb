@@ -2,7 +2,7 @@ module SocialQ
   class SessionQueue
     require 'json'
     
-    attr_reader :users, :agents, :session_sqs, :agent_sqs
+    attr_reader :users, :agents
     
     ##
     # Create a new ContactQueue Object
@@ -10,14 +10,11 @@ module SocialQ
     # @param [required, Integer] timer in seconds to scan the available agents
     # @param [required, Hash] amazon_options
     # @return [Object] ContactQueue
-    def initialize(timer, amazon_options)
+    def initialize(timer, queue_config)
       @users  = []
       @agents = []
       
-      # Setup Amazon Services
-      open_amazon_sqs(amazon_options)
-      open_amazon_sdb(amazon_options)
-      
+      @bunny = Rabbit.new(queue_config)
       # Launch the timer to search for agents
       launch_agent_scanner(timer)
     end
@@ -73,26 +70,6 @@ module SocialQ
       { :users => user_array, :agents => agent_array }.to_json
     end
     
-    def open_amazon_sqs(amazon_options)
-      # Setup the Amazon SQS connections
-      client = AWS::SQS::Client.new(amazon_options[:aws_access_key], 
-                                    amazon_options[:aws_secret_access_key], 
-                                    :endpoint => amazon_options[:endpoint])
-      @session_sqs = client.create_queue(amazon_options[:session_sqs])
-      @agent_sqs = client.create_queue(amazon_options[:agent_sqs])
-    end
-    
-    def open_amazon_sdb(amazon_options)
-      # Setup the Amazon Simple DB connections to persist messages, to check for duplicates
-      domain_exists = false
-      @simple_db = RightAws::SdbInterface.new(amazon_options[:aws_access_key],
-                                              amazon_options[:aws_secret_access_key], 
-                                              { :multi_thread => false })
-      domain_exists = false
-      @simple_db.list_domains[:domains].each { |domain| domain_exists == true if domain == amazon_options[:db] }
-      @simple_db.create_domain(amazon_options[:db]) unless domain_exists
-    end
-    
     private
     
     ##
@@ -102,9 +79,7 @@ module SocialQ
     # @return nil
     def launch_agent_scanner(timer)
       @scanning_thread = Thread.new do
-        p 'Scanning for available agents'
-        agent_messages = @agent_sqs.receive_messages
-        sleep timer
+        @bunny.agentq.subscribe { |msg| p msg }
       end
     end
   end

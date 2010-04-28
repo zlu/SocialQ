@@ -5,13 +5,7 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 describe SocialQ::SessionQueue do
   before(:all) do
     @config = YAML.load(File.open('config/application.yml'))
-    @session_queue = SocialQ::SessionQueue.new(@config['queue']['timer'],
-                                               { :aws_access_key        => @config['amazon']['aws_access_key'],
-                                                 :aws_secret_access_key => @config['amazon']['aws_secret_access_key'],
-                                                 :endpoint              => @config['amazon']['endpoint'],
-                                                 :session_sqs           => @config['amazon']['session_sqs'],
-                                                 :agent_sqs             => @config['amazon']['agent_sqs'],
-                                                 :db                    => @config['amazon']['db'] })
+    @session_queue = SocialQ::SessionQueue.new(@config['queue']['timer'], @config['rabbit_mq'])
   end
   
   it 'should create a SessionQueue object' do
@@ -38,13 +32,8 @@ describe SocialQ::SessionQueue do
   end
   
   it 'should render a JSON string' do
-    p @session_queue.render_json
     hash = JSON.parse(@session_queue.render_json)
     hash['agents'][0]['name'].should == 'John Doe'
   end
-  
-  it 'should have two instance methods that are an SQS queue' do
-    @session_queue.session_sqs.name.should == 'sessions'
-    @session_queue.agent_sqs.name.should == 'agents'
-  end
+
 end
