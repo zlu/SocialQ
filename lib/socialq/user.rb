@@ -42,7 +42,6 @@ module SocialQ
     end
     
     attr_reader :guid,
-                :name, 
                 :phone_number, 
                 :channel, 
                 :time, 
@@ -53,6 +52,7 @@ module SocialQ
                 :twitter_profile,
                 :klout, 
                 :social_influence_rank,
+                :tweet_watchword,
                 :queue_weight
     
     ##
@@ -64,13 +64,11 @@ module SocialQ
     # @param options [require, String] phone_number the phone number to dial to reach the agent, must include '+' country code (ie - +14155551212)
     # @return [Object] an User object
     def initialize(options = {})
-      raise ArgumentError, 'A hash with the :name set is required.'         if options[:name] == nil
       raise ArgumentError, 'A hash with the :twitter_user set is required.' if options[:twitter_user] == nil
       raise ArgumentError, 'A hash with the :phone_number set is required.' if options[:phone_number] == nil
       raise ArgumentError, 'A hash with the :channel set is required.'      if options[:channel] == nil
       
       @guid                  = UUIDTools::UUID.random_create.to_s
-      @name                  = options[:name]
       @twitter_user          = options[:twitter_user]
       @phone_number          = options[:phone_number]
       @channel               = options[:channel]
@@ -80,6 +78,10 @@ module SocialQ
       @tweet_count           = 0
       @klout_key             = options[:klout_key]
       @social_influence_rank, @klout = get_social_influence
+      
+      # Calcuate the initial queue weight for this contact
+      @weight_rules = options[:weight_rules]
+      calc_initial_weight
       
       @twitter_username   = options[:twitter_username]
       @twitter_password   = options[:twitter_password]
@@ -113,9 +115,22 @@ module SocialQ
     ##
     #
     def get_social_influence
-      author_info = Topsy::author_info @twitter_user
+      author_info = Topsy::author_info @twitter_user      
       klout_info = JSON.parse(RestClient.get("http://api.klout.com/1/users/show.json?key=#{@klout_key}&users=#{@twitter_user}").body)
-      return author_info['influence_level'], klout_info["users"][0]
+      if klout_info["status"] == 200
+        return author_info['influence_level'], klout_info["users"][0]
+      else
+        return author_info['influence_level'], { :result => 'Not found' }
+      end
+    end
+    
+    ##
+    #
+    def calc_initial_weight
+      @queue_weight = 0
+      @queue_weight = @klout['score']['kscore'] * @weight_rules['influence'] if @klout['score']
+      @queue_weight += @weight_rules['tweet'] if @channel == 'twitter'
+      @queue_weight += @weight_rules['phone'] if @channel == 'phone'
     end
     
     ##
@@ -126,7 +141,7 @@ module SocialQ
         client = TweetStream::Client.new(@twitter_username, @twitter_password)
         client.follow(@twitter_profile['id']) do |tweet|
           # If we get a matching word on our watchlist lets set the user watchword triggered
-          @twitter_watchwords.each { |word| twitter_alert!(word) if tweet.match(word) != nil }
+          @twitter_keywords.each { |word| twitter_alert!(word) if tweet[:text].match(word) }
         end
       end
     end

@@ -50,7 +50,6 @@ module SocialQ
       user_array = []
       @users.each do |user|
         user_array << { :guid                  => user.guid,
-                        :name                  => user.name,
                         :social_influence_rank => user.social_influence_rank,
                         :channel               => user.channel,
                         :phone_number          => user.phone_number,
@@ -58,6 +57,7 @@ module SocialQ
                         :twitter_keywords      => user.twitter_keywords,
                         :twitter_profile       => user.twitter_profile,
                         :klout                 => user.klout,
+                        :tweet_watchword       => user.tweet_watchword, # The last Tweet they did that triggered an increase in weight
                         :time                  => user.time }
       end
       

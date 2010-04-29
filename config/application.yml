@@ -12,7 +12,10 @@ rabbit_mq:
 twitter:
     username: squirrelrific
     password: squirrelsrock
-    keywords: squirrelrific
+    keywords: 
+        - fail
+        - sucks
+        - bad
     klout_key: txqh6gfjgwmb6tytv7yvb54y
 
 sinatra:
@@ -41,5 +44,5 @@ users:
 weight_rules:
     phone: 10 # Arrived as a realtime phone request
     tweet: 8 # Arrived as a tweet
-    influence: 2 # Factor by which social influence should weight, in this case (social influence * X )
+    influence: 2 # Factor by which social influence should weight, in this case (social influence * X ), may be a float
     keyword: 5 # If a keyword is spotted in the tweet stream of the user while in session, add X to the weight

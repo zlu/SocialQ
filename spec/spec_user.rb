@@ -19,28 +19,18 @@ end
 
 describe SocialQ::User do
   before(:all) do
-    config = YAML.load(File.open('config/application.yml'))
-    begin
-    @user = SocialQ::User.new({ :name             => 'Barack Obama', 
-                                :twitter_user     => 'barackobama', 
+    @config = YAML.load(File.open('config/application.yml'))
+    @user = SocialQ::User.new({ :twitter_user     => 'barackobama', 
                                 :phone_number     => '+14155551212',
                                 :channel          => 'twitter',
-                                :twitter_username => config['twitter']['username'],
-                                :twitter_password => config['twitter']['password'],
-                                :klout_key        => config['twitter']['klout_key'],
-                                :weight_rules     => config['weight_rules'] })
-                              rescue => e
-                                p e.backtrace
-                              end
+                                :twitter_username => @config['twitter']['username'],
+                                :twitter_password => @config['twitter']['password'],
+                                :klout_key        => @config['twitter']['klout_key'],
+                                :twitter_keywords => @config['twitter']['keywords'],
+                                :weight_rules     => @config['weight_rules'] })
   end
   
   it "should raise argument errors if a new user object is created without an option set" do
-    begin
-      result = SocialQ::User.new({ :foo => :bar })
-    rescue => e
-      e.to_s.should == 'A hash with the :name set is required.'
-    end
-    
    begin
       result = SocialQ::User.new({ :name => 'John Doe' })
     rescue => e
@@ -65,7 +55,6 @@ describe SocialQ::User do
   end
 
   it "should create a new user object with the appropriate values set" do
-    @user.name.should == 'Barack Obama'
     @user.twitter_user.should == 'barackobama'
     @user.phone_number.should == '+14155551212'
   end
@@ -91,5 +80,28 @@ describe SocialQ::User do
   
   it "should have a guid instance method" do
     @user.guid.should_not == nil
+  end
+  
+  it "should have a weight of" do
+    @user.queue_weight.should == 208
+  end
+  
+  it "should set the Twitter watch_word when a matching tweet is received" do
+     # First, create a user object so we start monitoring the stream of the user
+     user = SocialQ::User.new({ :twitter_user     => 'squirrelrific', 
+                                :phone_number     => '+14155551212',
+                                :channel          => 'twitter',
+                                :twitter_username => @config['twitter']['username'],
+                                :twitter_password => @config['twitter']['password'],
+                                :klout_key        => @config['twitter']['klout_key'],
+                                :twitter_keywords => @config['twitter']['keywords'],
+                                :weight_rules     => @config['weight_rules'] })
+    # Now, launch a tweet as that user
+    httpauth = Twitter::HTTPAuth.new(@config['twitter']['username'], @config['twitter']['password'])
+    client = Twitter::Base.new(httpauth)
+    client.update("#{UUIDTools::UUID.random_create} Squirrels fail!")
+    
+    sleep 5
+    user.tweet_watchword.should == 'fail'
   end
 end

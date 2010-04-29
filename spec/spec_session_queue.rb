@@ -13,23 +13,23 @@ describe SocialQ::SessionQueue do
   end
   
   it 'should add an agent to the agents array' do
-     @config['agents'].each do |agent|
+     @config['agents'].each_with_index do |agent, index|
         @session_queue.add_agent(SocialQ::Agent.new({ :name => agent['name'],
                                                       :phone_number => agent['phone_number'] }))
+        @session_queue.agents[index].phone_number.should == agent['phone_number']
       end
-    @session_queue.agents[0].name.should == 'John Doe'
   end
   
   it 'should add a user to the users array' do
-    @session_queue.add_user SocialQ::User.new({ :name               => 'Barack Obama',
-                                                :twitter_user       => 'barackobama',
+    @session_queue.add_user SocialQ::User.new({ :twitter_user       => 'barackobama',
                                                 :phone_number       => '+14155551212',
                                                 :channel            => 'twitter',
                                                 :twitter_username   => @config['twitter']['username'],
                                                 :twitter_password   => @config['twitter']['password'],
                                                 :twitter_keywords   => @config['twitter']['keywords'],
-                                                :klout_key          => @config['twitter']['klout_key'] })
-    @session_queue.users[0].name.should == 'Barack Obama'
+                                                :klout_key          => @config['twitter']['klout_key'],
+                                                :weight_rules       => @config['weight_rules'] })
+    @session_queue.users[0].twitter_user.should == 'barackobama'
   end
   
   it 'should render a JSON string' do
@@ -43,22 +43,14 @@ describe SocialQ::SessionQueue do
   end
   
   it 'should render a JSON string with two users' do
-    @session_queue.add_user SocialQ::User.new({ :name               => 'Barack Obama',
-                                                :twitter_user       => 'barackobama',
+    @session_queue.add_user SocialQ::User.new({ :twitter_user       => 'jsgoecke',
                                                 :phone_number       => '+14155551212',
                                                 :channel            => 'twitter',
                                                 :twitter_username   => @config['twitter']['username'],
                                                 :twitter_password   => @config['twitter']['password'],
                                                 :twitter_keywords   => @config['twitter']['keywords'],
-                                                :klout_key          => @config['twitter']['klout_key'] })
-    @session_queue.add_user SocialQ::User.new({ :name               => 'Jason Goecke',
-                                                :twitter_user       => 'jsgoecke',
-                                                :phone_number       => '+14155551212',
-                                                :channel            => 'twitter',
-                                                :twitter_username   => @config['twitter']['username'],
-                                                :twitter_password   => @config['twitter']['password'],
-                                                :twitter_keywords   => @config['twitter']['keywords'],
-                                                :klout_key          => @config['twitter']['klout_key'] })
+                                                :klout_key          => @config['twitter']['klout_key'],
+                                                :weight_rules       => @config['weight_rules'] })
     hash = JSON.parse(@session_queue.render_json)
     hash['users'].length == 2
   end
