@@ -2,7 +2,7 @@ module SocialQ
   class Rabbit
     require 'bunny'
     
-    attr_reader :agentq
+    attr_reader :agentq, :callq
     
     def initialize(params)
       bunny = Bunny.new(:user    => params['user'],
@@ -15,6 +15,8 @@ module SocialQ
       
       @socialq = bunny.queue(params['socialq'])
       @agentq = bunny.queue(params['agentq'])
+      @callq = bunny.queue(params['callq'])
+      @responseq = bunny.queue(params['callq'])
     end
   
     def publish_socialq(msg)

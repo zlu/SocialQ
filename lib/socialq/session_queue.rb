@@ -1,5 +1,7 @@
 module SocialQ
   class SessionQueue
+    require 'thread'
+    
     attr_reader :users, :agents
     
     ##
@@ -14,8 +16,7 @@ module SocialQ
       
       @bunny = Rabbit.new(queue_config)
       
-      # Launch the timer to search for agents
-      launch_agent_scanner
+      @semaphore = Mutex.new
     end
     
     ##
@@ -53,7 +54,6 @@ module SocialQ
                         :channel               => user.channel,
                         :phone_number          => user.phone_number,
                         :queue_weight          => user.queue_weight,
-                        :twitter_keywords      => user.twitter_keywords,
                         :twitter_profile       => user.twitter_profile,
                         :klout                 => user.klout,
                         :tweet_watchword       => user.tweet_watchword, # The last Tweet they did that triggered an increase in weight
@@ -70,19 +70,6 @@ module SocialQ
       result = { :users => user_array, :agents => agent_array }.to_json
       @bunny.publish_socialq(result)
       result
-    end
-    
-    private
-    
-    ##
-    # Launches a thread to scan available agents every X seconds
-    #
-    # @param [required, Integer] timer in seconds to scan the available agents
-    # @return nil
-    def launch_agent_scanner
-      @scanning_thread = Thread.new do
-        @bunny.agentq.subscribe { |msg| p msg }
-      end
     end
   end
 end

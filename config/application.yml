@@ -9,7 +9,7 @@ rabbit_mq:
     socialq: socialq # Where we publish the Social Q messages
     agentq: agentq # Where agent requests to take a call get passed
     callq: callq
-    responeq: responseq
+    responseq: responseq
 
 twitter:
     username: squirrelrific
