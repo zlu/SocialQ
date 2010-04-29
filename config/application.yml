@@ -8,6 +8,8 @@ rabbit_mq:
     logging: false
     socialq: socialq # Where we publish the Social Q messages
     agentq: agentq # Where agent requests to take a call get passed
+    callq: callq
+    responeq: responseq
 
 twitter:
     username: squirrelrific

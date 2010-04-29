@@ -13,7 +13,7 @@ describe SocialQ::Rabbit do
   end
   
   it 'should publish and receive a message from socialq' do
-    @bunny.publish_socialq({ :foo => 'bar' })
+    @bunny.publish_socialq({ :foo => 'bar' }.to_json)
     JSON.parse(@bunny.read_socialq).should == { 'foo' => 'bar' }
   end
   

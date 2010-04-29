@@ -33,12 +33,12 @@ describe SocialQ::SessionQueue do
   end
   
   it 'should render a JSON string' do
-    hash = JSON.parse(@session_queue.render_json)
+    hash = JSON.parse(@session_queue.publish_json)
     hash['agents'][0]['name'].should == 'John Doe'
   end
 
   it 'should render a JSON string with two agents' do
-    hash = JSON.parse(@session_queue.render_json)
+    hash = JSON.parse(@session_queue.publish_json)
     hash['agents'].length == 2
   end
   
@@ -51,7 +51,7 @@ describe SocialQ::SessionQueue do
                                                 :twitter_keywords   => @config['twitter']['keywords'],
                                                 :klout_key          => @config['twitter']['klout_key'],
                                                 :weight_rules       => @config['weight_rules'] })
-    hash = JSON.parse(@session_queue.render_json)
+    hash = JSON.parse(@session_queue.publish_json)
     hash['users'].length == 2
   end
 end

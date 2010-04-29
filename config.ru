@@ -1,3 +1,3 @@
-require 'social_contact_center'
+require 'app'
 
 run Sinatra::Application

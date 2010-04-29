@@ -1,8 +1,7 @@
-%w(bunny json).each { |lib| require lib }
-
 module SocialQ
   class Rabbit
-
+    require 'bunny'
+    
     attr_reader :agentq
     
     def initialize(params)
@@ -19,7 +18,7 @@ module SocialQ
     end
   
     def publish_socialq(msg)
-      @socialq.publish(msg.to_json)
+      @socialq.publish(msg)
     end
     
     def read_socialq

@@ -152,6 +152,7 @@ module SocialQ
     def twitter_alert!(watchword)
       @tweet_watchword = watchword
       @tweet_count += 1
+      @queue_weight += @weight_rules['keyword']
     end
     
   end

@@ -1,7 +1,5 @@
 module SocialQ
   class SessionQueue
-    require 'json'
-    
     attr_reader :users, :agents
     
     ##
@@ -15,6 +13,7 @@ module SocialQ
       @agents = []
       
       @bunny = Rabbit.new(queue_config)
+      
       # Launch the timer to search for agents
       launch_agent_scanner
     end
@@ -46,7 +45,7 @@ module SocialQ
       @agents << agent
     end
     
-    def render_json
+    def publish_json
       user_array = []
       @users.each do |user|
         user_array << { :guid                  => user.guid,
@@ -67,8 +66,10 @@ module SocialQ
                          :name => agent.name,
                          :phone_number => agent.phone_number }
       end
-      
-      { :users => user_array, :agents => agent_array }.to_json
+
+      result = { :users => user_array, :agents => agent_array }.to_json
+      @bunny.publish_socialq(result)
+      result
     end
     
     private
