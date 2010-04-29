@@ -8,7 +8,7 @@ APP_CONFIG = YAML.load(File.open('config/application.yml'))
 @log.level = Logger::DEBUG
 @log.info 'Starting SocialQ'
 
-%w(right_aws sinatra thread tropo-webapi-ruby bunny).each { |lib| require lib }
+%w(sinatra tropo-webapi-ruby bunny).each { |lib| require lib }
 
 set :sessions, true
 set :port, APP_CONFIG['sinatra']['port']
