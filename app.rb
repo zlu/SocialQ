@@ -21,7 +21,7 @@ def connect_to_rabbit(queue)
                     :vhost   => APP_CONFIG['rabbit_mq']['vhost'],
                     :logging => APP_CONFIG['rabbit_mq']['logging'])
   bunny.start
-  bunny.queue(config['rabbit_mq'][queue])
+  bunny.queue(APP_CONFIG['rabbit_mq'][queue])
 end
 
 # Section or dealng wth Tropo WebAPI
