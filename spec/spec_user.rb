@@ -20,12 +20,18 @@ end
 describe SocialQ::User do
   before(:all) do
     config = YAML.load(File.open('config/application.yml'))
+    begin
     @user = SocialQ::User.new({ :name             => 'Barack Obama', 
                                 :twitter_user     => 'barackobama', 
                                 :phone_number     => '+14155551212',
                                 :channel          => 'twitter',
                                 :twitter_username => config['twitter']['username'],
-                                :twitter_password => config['twitter']['password'] })
+                                :twitter_password => config['twitter']['password'],
+                                :klout_key        => config['twitter']['klout_key'],
+                                :weight_rules     => config['weight_rules'] })
+                              rescue => e
+                                p e.backtrace
+                              end
   end
   
   it "should raise argument errors if a new user object is created without an option set" do
@@ -35,12 +41,12 @@ describe SocialQ::User do
       e.to_s.should == 'A hash with the :name set is required.'
     end
     
-     begin
-        result = SocialQ::User.new({ :name => 'John Doe' })
-      rescue => e
-        e.to_s.should == 'A hash with the :twitter_user set is required.'
-      end
-      
+   begin
+      result = SocialQ::User.new({ :name => 'John Doe' })
+    rescue => e
+      e.to_s.should == 'A hash with the :twitter_user set is required.'
+    end
+    
     begin
       result = SocialQ::User.new({ :name => 'John Doe', :twitter_user => 'johndoe' })
     rescue => e
@@ -64,7 +70,7 @@ describe SocialQ::User do
     @user.phone_number.should == '+14155551212'
   end
   
-  it "should have an user object should successfully transition through all of its state" do
+  it "should have a user object should successfully transition through all of its state" do
     @user.start?.should == true
     @user.send_call!
     @user.on_with_agent?.should == true
@@ -77,6 +83,10 @@ describe SocialQ::User do
   
   it "should set the social_influence_rank" do
     @user.social_influence_rank.should == 10
+  end
+  
+  it "should set the klout" do
+    @user.klout['twitter_screen_name'].should == 'BarackObama'
   end
   
   it "should have a guid instance method" do

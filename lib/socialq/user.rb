@@ -50,7 +50,8 @@ module SocialQ
                 :twitter_user, 
                 :twitter_keywords, 
                 :tweet_count, 
-                :twitter_profile, 
+                :twitter_profile,
+                :klout, 
                 :social_influence_rank,
                 :queue_weight
     
@@ -66,7 +67,7 @@ module SocialQ
       raise ArgumentError, 'A hash with the :name set is required.'         if options[:name] == nil
       raise ArgumentError, 'A hash with the :twitter_user set is required.' if options[:twitter_user] == nil
       raise ArgumentError, 'A hash with the :phone_number set is required.' if options[:phone_number] == nil
-      raise ArgumentError, 'A hash with the :channel set is required.'      if options[:phone_number] == nil
+      raise ArgumentError, 'A hash with the :channel set is required.'      if options[:channel] == nil
       
       @guid                  = UUIDTools::UUID.random_create.to_s
       @name                  = options[:name]
@@ -77,7 +78,8 @@ module SocialQ
       @agent                 = nil
       @tweet_watchword       = nil
       @tweet_count           = 0
-      @social_influence_rank = get_social_influence
+      @klout_key             = options[:klout_key]
+      @social_influence_rank, @klout = get_social_influence
       
       @twitter_username   = options[:twitter_username]
       @twitter_password   = options[:twitter_password]
@@ -112,7 +114,8 @@ module SocialQ
     #
     def get_social_influence
       author_info = Topsy::author_info @twitter_user
-      author_info['influence_level']
+      klout_info = JSON.parse(RestClient.get("http://api.klout.com/1/users/show.json?key=#{@klout_key}&users=#{@twitter_user}").body)
+      return author_info['influence_level'], klout_info["users"][0]
     end
     
     ##

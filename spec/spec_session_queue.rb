@@ -5,7 +5,7 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 describe SocialQ::SessionQueue do
   before(:all) do
     @config = YAML.load(File.open('config/application.yml'))
-    @session_queue = SocialQ::SessionQueue.new(@config['queue']['timer'], @config['rabbit_mq'])
+    @session_queue = SocialQ::SessionQueue.new(@config['rabbit_mq'])
   end
   
   it 'should create a SessionQueue object' do
@@ -27,7 +27,8 @@ describe SocialQ::SessionQueue do
                                                 :channel            => 'twitter',
                                                 :twitter_username   => @config['twitter']['username'],
                                                 :twitter_password   => @config['twitter']['password'],
-                                                :twitter_keywords   => @config['twitter']['keywords'] })
+                                                :twitter_keywords   => @config['twitter']['keywords'],
+                                                :klout_key          => @config['twitter']['klout_key'] })
     @session_queue.users[0].name.should == 'Barack Obama'
   end
   
@@ -36,4 +37,29 @@ describe SocialQ::SessionQueue do
     hash['agents'][0]['name'].should == 'John Doe'
   end
 
+  it 'should render a JSON string with two agents' do
+    hash = JSON.parse(@session_queue.render_json)
+    hash['agents'].length == 2
+  end
+  
+  it 'should render a JSON string with two users' do
+    @session_queue.add_user SocialQ::User.new({ :name               => 'Barack Obama',
+                                                :twitter_user       => 'barackobama',
+                                                :phone_number       => '+14155551212',
+                                                :channel            => 'twitter',
+                                                :twitter_username   => @config['twitter']['username'],
+                                                :twitter_password   => @config['twitter']['password'],
+                                                :twitter_keywords   => @config['twitter']['keywords'],
+                                                :klout_key          => @config['twitter']['klout_key'] })
+    @session_queue.add_user SocialQ::User.new({ :name               => 'Jason Goecke',
+                                                :twitter_user       => 'jsgoecke',
+                                                :phone_number       => '+14155551212',
+                                                :channel            => 'twitter',
+                                                :twitter_username   => @config['twitter']['username'],
+                                                :twitter_password   => @config['twitter']['password'],
+                                                :twitter_keywords   => @config['twitter']['keywords'],
+                                                :klout_key          => @config['twitter']['klout_key'] })
+    hash = JSON.parse(@session_queue.render_json)
+    hash['users'].length == 2
+  end
 end

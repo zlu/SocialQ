@@ -10,13 +10,13 @@ module SocialQ
     # @param [required, Integer] timer in seconds to scan the available agents
     # @param [required, Hash] amazon_options
     # @return [Object] ContactQueue
-    def initialize(timer, queue_config)
+    def initialize(queue_config)
       @users  = []
       @agents = []
       
       @bunny = Rabbit.new(queue_config)
       # Launch the timer to search for agents
-      launch_agent_scanner(timer)
+      launch_agent_scanner
     end
     
     ##
@@ -57,6 +57,7 @@ module SocialQ
                         :queue_weight          => user.queue_weight,
                         :twitter_keywords      => user.twitter_keywords,
                         :twitter_profile       => user.twitter_profile,
+                        :klout                 => user.klout,
                         :time                  => user.time }
       end
       
@@ -77,7 +78,7 @@ module SocialQ
     #
     # @param [required, Integer] timer in seconds to scan the available agents
     # @return nil
-    def launch_agent_scanner(timer)
+    def launch_agent_scanner
       @scanning_thread = Thread.new do
         @bunny.agentq.subscribe { |msg| p msg }
       end
