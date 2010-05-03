@@ -28,6 +28,7 @@ module SocialQ
       @semaphore.synchronize do
         @users << user
         publish_json
+        user.add_observer(self)
       end
     end
     
@@ -53,6 +54,11 @@ module SocialQ
         @agents << agent
         publish_json
       end
+    end
+    
+    # Called by the observer if we see a change to render the JSON to the queue, since we had an update
+    def update
+      self.publish_json
     end
     
     def publish_json

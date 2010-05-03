@@ -1,25 +1,7 @@
 module SocialQ
   require 'aasm'
   class Agent
-    include AASM
-    aasm_state         :unavailable
-    aasm_state         :available
-    aasm_initial_state :unavailable
-
-    aasm_event :send_call do
-      transitions :to => :unavailable, :from => :available
-      @time = Time.now
-    end
-    
-    aasm_event :make_available do
-      transitions :to => :available, :from => :unavailable
-      @time = Time.now
-    end
-    
-    aasm_event :make_unavailable do
-      transitions :to => :unavailable, :from => :available
-      @time = Time.now
-    end
+    include Observable
     
     attr_reader :guid, :name, :phone_number, :time, :user
     

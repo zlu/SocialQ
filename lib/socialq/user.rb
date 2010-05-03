@@ -30,17 +30,8 @@ module SocialQ
       end
     end
     
-    include AASM
-    
-    aasm_state         :start
-    aasm_state         :on_with_agent
-    aasm_initial_state :start
-
-    aasm_event :send_call do
-      transitions :to => :on_with_agent, :from => :start
-      @time = Time.now
-    end
-    
+    include Observable
+        
     attr_reader :guid,
                 :phone_number, 
                 :channel, 
@@ -156,6 +147,9 @@ module SocialQ
       @tweet_watchword = watchword
       @tweet_count += 1
       @queue_weight += @weight_rules['keyword']
+      # Notify the observers that something has changed!
+      changed
+      notify_observers
     end
     
   end

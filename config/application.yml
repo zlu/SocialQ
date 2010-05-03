@@ -33,11 +33,12 @@ agents:
       
 users:
     - name: Lenos Squirrel
-      phone_number: '4157044517'
-      twitter_user: LenosSquirrel
-    - name: Jason Goecke
+      #phone_number: '4157044517'
       phone_number: jsgoecke
-      twitter_user: jsgoecke
+      twitter_user: LenosSquirrel
+    # - name: Jason Goecke
+    #   phone_number: jsgoecke
+    #   twitter_user: jsgoecke
     - name:
       phone_number:
       twitter_user:
