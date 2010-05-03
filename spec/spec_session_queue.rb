@@ -14,7 +14,7 @@ describe SocialQ::SessionQueue do
   
   it 'should add an agent to the agents array' do
      @config['agents'].each_with_index do |agent, index|
-        @session_queue.add_agent(SocialQ::Agent.new({ :name => agent['name'],
+        @session_queue.add_agent(SocialQ::Agent.new({ :name         => agent['name'],
                                                       :phone_number => agent['phone_number'] }))
         @session_queue.agents[index].phone_number.should == agent['phone_number']
       end
@@ -28,7 +28,8 @@ describe SocialQ::SessionQueue do
                                                 :twitter_password   => @config['twitter']['password'],
                                                 :twitter_keywords   => @config['twitter']['keywords'],
                                                 :klout_key          => @config['twitter']['klout_key'],
-                                                :weight_rules       => @config['weight_rules'] })
+                                                :weight_rules       => @config['weight_rules'],
+                                                :queue_name         => '1234' })
     @session_queue.users[0].twitter_user.should == 'barackobama'
   end
   
@@ -50,7 +51,8 @@ describe SocialQ::SessionQueue do
                                                 :twitter_password   => @config['twitter']['password'],
                                                 :twitter_keywords   => @config['twitter']['keywords'],
                                                 :klout_key          => @config['twitter']['klout_key'],
-                                                :weight_rules       => @config['weight_rules'] })
+                                                :weight_rules       => @config['weight_rules'],
+                                                :queue_name         => '1234' })
     hash = JSON.parse(@session_queue.publish_json)
     hash['users'].length == 2
   end

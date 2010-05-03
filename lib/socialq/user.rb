@@ -53,7 +53,8 @@ module SocialQ
                 :klout, 
                 :social_influence_rank,
                 :tweet_watchword,
-                :queue_weight
+                :queue_weight,
+                :queue_name
     
     ##
     # Creates a User object
@@ -67,6 +68,7 @@ module SocialQ
       raise ArgumentError, 'A hash with the :twitter_user set is required.' if options[:twitter_user] == nil
       raise ArgumentError, 'A hash with the :phone_number set is required.' if options[:phone_number] == nil
       raise ArgumentError, 'A hash with the :channel set is required.'      if options[:channel] == nil
+      raise ArgumentError, 'A hash with the :queue_name set is required.'   if options[:queue_name] == nil
       
       @guid                  = UUIDTools::UUID.random_create.to_s
       @twitter_user          = options[:twitter_user]
@@ -78,6 +80,7 @@ module SocialQ
       @tweet_count           = 0
       @klout_key             = options[:klout_key]
       @social_influence_rank, @klout = get_social_influence
+      @queue_name            = options[:queue_name]
       
       # Calcuate the initial queue weight for this contact
       @weight_rules = options[:weight_rules]

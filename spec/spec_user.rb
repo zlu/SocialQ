@@ -27,7 +27,8 @@ describe SocialQ::User do
                                 :twitter_password => @config['twitter']['password'],
                                 :klout_key        => @config['twitter']['klout_key'],
                                 :twitter_keywords => @config['twitter']['keywords'],
-                                :weight_rules     => @config['weight_rules'] })
+                                :weight_rules     => @config['weight_rules'],
+                                :queue_name       => '1234' })
   end
   
   it "should raise argument errors if a new user object is created without an option set" do
@@ -95,7 +96,8 @@ describe SocialQ::User do
                                 :twitter_password => @config['twitter']['password'],
                                 :klout_key        => @config['twitter']['klout_key'],
                                 :twitter_keywords => @config['twitter']['keywords'],
-                                :weight_rules     => @config['weight_rules'] })
+                                :weight_rules     => @config['weight_rules'],
+                                :queue_name       => '1234' })
     # Now, launch a tweet as that user
     httpauth = Twitter::HTTPAuth.new(@config['twitter']['username'], @config['twitter']['password'])
     client = Twitter::Base.new(httpauth)

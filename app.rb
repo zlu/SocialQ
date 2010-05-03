@@ -3,6 +3,7 @@ $: << File.expand_path(File.dirname(__FILE__))
 
 # Load the configuration
 APP_CONFIG = YAML.load(File.open('config/application.yml'))
+
 # Start the logger
 @log = Logger.new(STDOUT)
 @log.level = Logger::DEBUG
@@ -29,12 +30,25 @@ end
 post '/start.json' do
   tropo_event = Tropo::Generator.parse request.env["rack.input"].read
   callq = connect_to_rabbit('callq')
-  callq.publish(tropo_event.to_json)
+  
+  if tropo_event.session.from.channel == 'VOICE'
+    time = Time.now.to_i.to_s
+    tropo = Tropo::Generator.new do
+      say 'Thank you for calling, please wait while we find an agent for you.'
+      conference :id => time, :name => 'SocialQ', :sendTones => false
+      #on :event => 'continue', :next => '/conferenced.json'
+    end
+    queue_message = tropo_event.merge!({ :queue_name => time })
+    callq.publish(queue_message.to_json)
+    tropo.response
+  else
+    callq.publish(tropo_event.to_json)
+  end
 end
 
-post '/queue.json' do
+post '/conference.json' do
+  
 end
-
 
 # Section for dealing with RESTful Rabbit Interface
 

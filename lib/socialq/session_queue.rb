@@ -25,7 +25,10 @@ module SocialQ
     # @param [Object] user the user to add to the queue
     # @return nil
     def add_user(user)
-      @users << user
+      @semaphore.synchronize do
+        @users << user
+        publish_json
+      end
     end
     
     ##
@@ -34,7 +37,10 @@ module SocialQ
     # @param [Object] user to deleted from the queue
     # @return nil
     def delete_user(user)
-      @users.delete(user)
+      @semaphore.syncrhonize do
+        @users.delete(user)
+        publish_json
+      end
     end
     
     ##
@@ -43,7 +49,10 @@ module SocialQ
     # @param [Object] agent to deleted from the queue
     # @return nil
     def add_agent(agent)
-      @agents << agent
+      @semaphore.synchronize do
+        @agents << agent
+        publish_json
+      end
     end
     
     def publish_json
@@ -57,7 +66,8 @@ module SocialQ
                         :twitter_profile       => user.twitter_profile,
                         :klout                 => user.klout,
                         :tweet_watchword       => user.tweet_watchword, # The last Tweet they did that triggered an increase in weight
-                        :time                  => user.time }
+                        :time                  => user.time,
+                        :queue_name            => user.queue_name }
       end
       
       agent_array = []
