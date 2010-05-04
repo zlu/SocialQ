@@ -30,6 +30,8 @@ agentq = bunny_agentq.queue(APP_CONFIG['rabbit_mq']['agentq'])
 callq = bunny_callq.queue(APP_CONFIG['rabbit_mq']['callq'])
 
 threads = []
+
+# Thread that watches for agents and their actions
 threads << Thread.new do
   agentq.subscribe do |msg|
     p 'AgentQ message received!'
@@ -44,25 +46,32 @@ threads << Thread.new do
       session = user if user.guid == message['customer_guid']
       break
     end
-    if session && session.channel == 'phone'
-      # Customer is already in the conference, so lets just connect the agent
-      url = APP_CONFIG['tropo']['url'] + "&request_type=session_api&queue_name=#{session.queue_name}&phone_number=#{message['agent_phone']}"
-      RestClient.get url
-    elsif session && session.channel == 'twitter'
-      # Since this originated as a Tweet, we need to connect both the user and the agent in the same Q
-      queue_name = Time.now.to_i.to_s
-      # First the agent
-      Thread.new do
-        url = APP_CONFIG['tropo']['url'] + "&request_type=session_api&queue_name=#{queue_name}&phone_number=#{message['agent_phone']}"
+    
+    # Only call them if that is what the agent wants, as they may have responded with a tweet and that is good enough
+    if message['action'] == 'call'
+      if session && session.channel == 'phone'
+        # Customer is already in the conference, so lets just connect the agent
+        url = APP_CONFIG['tropo']['url'] + "&request_type=session_api&queue_name=#{session.queue_name}&phone_number=#{message['agent_phone']}"
+        RestClient.get url
+      elsif session && session.channel == 'twitter'
+        # Since this originated as a Tweet, we need to connect both the user and the agent in the same Q
+        queue_name = Time.now.to_i.to_s
+        # First the agent
+        Thread.new do
+          url = APP_CONFIG['tropo']['url'] + "&request_type=session_api&queue_name=#{queue_name}&phone_number=#{message['agent_phone']}"
+          RestClient.get url
+        end
+        # Then the customer
+        url = APP_CONFIG['tropo']['url'] + "&request_type=session_api&queue_name=#{queue_name}&phone_number=#{session.phone_number}"
         RestClient.get url
       end
-      # Then the customer
-      url = APP_CONFIG['tropo']['url'] + "&request_type=session_api&queue_name=#{queue_name}&phone_number=#{session.phone_number}"
-      RestClient.get url
     end
+    # Delete the user from queue
+    @socialq.delete_user(session.guid)
   end
 end
 
+# Thread that watches for new calls coming in
 threads << Thread.new do
   callq.subscribe do |msg|
     p 'CallQ message received!'

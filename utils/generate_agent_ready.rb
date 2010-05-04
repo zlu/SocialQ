@@ -9,7 +9,7 @@ bunny = Bunny.new(:user    => 'rabbit0002',
                   :logging => true)
 bunny.start
 
-json = '{"customer_guid": "818bc7c6-c223-4446-a420-bf1246ea20b6", "agent_phone": "14153675082"}'
+json = '{"customer_guid": "818bc7c6-c223-4446-a420-bf1246ea20b6", "agent_phone": "14153675082", "action": "call"}'
 p json
 q = bunny.queue('agentq')
 q.publish(json)
