@@ -56,4 +56,15 @@ describe SocialQ::SessionQueue do
     hash = JSON.parse(@session_queue.publish_json)
     hash['users'].length == 2
   end
+  
+  it 'should delete a user from the user array when requested' do
+    guid = @session_queue.users[0].guid
+    @session_queue.delete_user(guid)
+    user = nil
+    @session_queue.users.each do |u|
+      user = u if u.guid == guid
+      break
+    end
+    user.should == nil
+  end
 end

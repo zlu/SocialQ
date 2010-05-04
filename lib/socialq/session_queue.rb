@@ -37,9 +37,14 @@ module SocialQ
     #
     # @param [Object] user to deleted from the queue
     # @return nil
-    def delete_user(user)
-      @semaphore.syncrhonize do
-        @users.delete(user)
+    def delete_user(guid)
+      @semaphore.synchronize do
+        user_to_delete = nil
+        @users.each do |user|
+          user_to_delete = user if user.guid == guid
+          break
+        end
+        @users.delete(user_to_delete)
         publish_json
       end
     end
