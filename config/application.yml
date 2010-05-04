@@ -11,6 +11,9 @@ rabbit_mq:
     callq: callq
     responseq: responseq
 
+tropo:
+    # &queue_name=1234&request_type=session_api&queue_name='1234'&phone_number=14153675082
+    url: 'http://api.tropo.com/1.0/sessions?action=create&token=c2624fb3e36eb644802735e3607cb1a83f5dbff50969c0f65a73ddeabe3180a1abeb6c41494437753769cc63'
 twitter:
     username: squirrelrific
     password: squirrelsrock
@@ -21,7 +24,7 @@ twitter:
     klout_key: txqh6gfjgwmb6tytv7yvb54y
 
 sinatra:
-    port: 4567
+    port: 10917
 
 agents:
     - name: John Doe

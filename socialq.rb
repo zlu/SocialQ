@@ -1,5 +1,5 @@
 $: << File.expand_path(File.dirname(__FILE__))
-%w(rubygems json lib/socialq tropo-webapi-ruby).each { |lib| require lib }
+%w(rubygems json lib/socialq tropo-webapi-ruby restclient).each { |lib| require lib }
 
 # Load configuration
 APP_CONFIG = YAML.load(File.open('config/application.yml'))
@@ -10,23 +10,54 @@ APP_CONFIG = YAML.load(File.open('config/application.yml'))
 
 @socialq = SocialQ::SessionQueue.new(APP_CONFIG['rabbit_mq'])
 
-bunny = Bunny.new(:user    => APP_CONFIG['rabbit_mq']['user'],
-                  :pass    => APP_CONFIG['rabbit_mq']['pass'],
-                  :host    => APP_CONFIG['rabbit_mq']['host'],
-                  :port    => APP_CONFIG['rabbit_mq']['port'],
-                  :vhost   => APP_CONFIG['rabbit_mq']['vhost'],
-                  :logging => APP_CONFIG['rabbit_mq']['logging'])
-bunny.start
-agentq = bunny.queue(APP_CONFIG['rabbit_mq']['agentq'])
-callq = bunny.queue(APP_CONFIG['rabbit_mq']['callq'])
+bunny_agentq = Bunny.new(:user    => APP_CONFIG['rabbit_mq']['user'],
+                         :pass    => APP_CONFIG['rabbit_mq']['pass'],
+                         :host    => APP_CONFIG['rabbit_mq']['host'],
+                         :port    => APP_CONFIG['rabbit_mq']['port'],
+                         :vhost   => APP_CONFIG['rabbit_mq']['vhost'],
+                         :logging => APP_CONFIG['rabbit_mq']['logging'])
+
+bunny_callq = Bunny.new(:user    => APP_CONFIG['rabbit_mq']['user'],
+                        :pass    => APP_CONFIG['rabbit_mq']['pass'],
+                        :host    => APP_CONFIG['rabbit_mq']['host'],
+                        :port    => APP_CONFIG['rabbit_mq']['port'],
+                        :vhost   => APP_CONFIG['rabbit_mq']['vhost'],
+                        :logging => APP_CONFIG['rabbit_mq']['logging'])
+bunny_agentq.start
+bunny_callq.start
+
+agentq = bunny_agentq.queue(APP_CONFIG['rabbit_mq']['agentq'])
+callq = bunny_callq.queue(APP_CONFIG['rabbit_mq']['callq'])
 
 threads = []
-# threads << Thread.new do
-#   agentq.subscribe { |msg| @log.debug JSON.parse(msg[:payload]) }
-# end
+threads << Thread.new do
+  agentq.subscribe do |msg|
+    p 'AgentQ message received!'
+    # We are expecting a JSON document like this:
+    # {
+    #     "customer_guid": "5f43ae91-0ee3-4e42-b23a-7c3f636fc355",
+    #     "agent_phone": "+14155551212"
+    # }
+    session = nil
+    message = JSON.parse msg[:payload]
+    @socialq.users.each do |user|
+      p user.guid
+      p '*'*10
+      session = user if user.guid == message['customer_guid']
+      break
+    end
+    if session && session.channel == 'phone'
+      url = APP_CONFIG['tropo']['url'] + "&request_type=session_api&queue_name=#{session.queue_name}&phone_number=#{message['agent_phone']}"
+      RestClient.get url
+    else
+      p 'foobar'
+    end
+  end
+end
 
 threads << Thread.new do
   callq.subscribe do |msg|
+    p 'CallQ message received!'
     tropo_event = JSON.parse msg[:payload]
     if tropo_event['session']['from']['channel'] == 'VOICE'
       # Need to find the corresponding Twitter ID based on CallerID
@@ -37,8 +68,6 @@ threads << Thread.new do
           break
         end
       end
-      p '*'*10
-      p twitter_user
       # Create the user
       @socialq.add_user SocialQ::User.new({ :twitter_user     => twitter_user,
                                             :phone_number     => tropo_event['session']['from']['id'],
@@ -67,7 +96,7 @@ threads << Thread.new do
                                             :klout_key        => APP_CONFIG['twitter']['klout_key'],
                                             :twitter_keywords => APP_CONFIG['twitter']['keywords'],
                                             :weight_rules     => APP_CONFIG['weight_rules'],
-                                            :queue_name       => tropo_event['queue_name'] })
+                                            :queue_name       => 'twitter' })
     end
   end
 end

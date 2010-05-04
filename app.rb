@@ -29,29 +29,42 @@ end
 
 post '/start.json' do
   tropo_event = Tropo::Generator.parse request.env["rack.input"].read
-  callq = connect_to_rabbit('callq')
-  
-  if tropo_event.session.from.channel == 'VOICE'
-    time = Time.now.to_i.to_s
+  if tropo_event['session']['parameters']
     tropo = Tropo::Generator.new do
-      say 'Thank you for calling, please wait while we find an agent for you.'
-      conference :id => time, :name => 'SocialQ', :sendTones => false
-      #on :event => 'continue', :next => '/conferenced.json'
+      on :event => 'error', :next => '/error.json'
+      call({ :to              => 'tel:+' + tropo_event.session.parameters.phone_number, 
+             :from            => '6172977928',
+             :network         => 'PSTN',
+             :channel         => 'VOICE',
+             :timeout         => 30,
+             :answer_on_media => false })
+      conference :id => tropo_event.session.parameters.queue_name, :name => 'SocialQ'
     end
-    queue_message = tropo_event.merge!({ :queue_name => time })
-    callq.publish(queue_message.to_json)
     tropo.response
   else
-    callq.publish(tropo_event.to_json)
+    callq = connect_to_rabbit('callq')
+  
+    if tropo_event.session.from.channel == 'VOICE'
+      time = Time.now.to_i.to_s
+      tropo = Tropo::Generator.new do
+        say 'Thank you for calling, please wait while we find an agent for you.'
+        conference :id => time, :name => 'SocialQ', :sendTones => false
+        #on :event => 'continue', :next => '/conferenced.json'
+      end
+      queue_message = tropo_event.merge!({ :queue_name => time })
+      callq.publish(queue_message.to_json)
+      tropo.response
+    else
+      callq.publish(tropo_event.to_json)
+    end
   end
 end
 
-post '/conference.json' do
-  
+post '/error.json' do
+  p Tropo::Generator.parse request.env["rack.input"].read
 end
 
 # Section for dealing with RESTful Rabbit Interface
-
 get '/messages' do
   socialq = connect_to_rabbit('socialq')
   
