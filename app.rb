@@ -80,6 +80,11 @@ get '/messages' do
   messages.to_json
 end
 
+post '/publish_message' do
+  socialq = connect_to_rabbit('socialq')
+  socialq.publish(request.env["rack.input"].read)
+end
+
 post '/agent_ready' do
   agentq = connect_to_rabbit('agentq')
   agentq.publish(request.env["rack.input"].read)
