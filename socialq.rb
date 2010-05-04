@@ -41,16 +41,24 @@ threads << Thread.new do
     session = nil
     message = JSON.parse msg[:payload]
     @socialq.users.each do |user|
-      p user.guid
-      p '*'*10
       session = user if user.guid == message['customer_guid']
       break
     end
     if session && session.channel == 'phone'
+      # Customer is already in the conference, so lets just connect the agent
       url = APP_CONFIG['tropo']['url'] + "&request_type=session_api&queue_name=#{session.queue_name}&phone_number=#{message['agent_phone']}"
       RestClient.get url
-    else
-      p 'foobar'
+    elsif session && session.channel == 'twitter'
+      # Since this originated as a Tweet, we need to connect both the user and the agent in the same Q
+      queue_name = Time.now.to_i.to_s
+      # First the agent
+      Thread.new do
+        url = APP_CONFIG['tropo']['url'] + "&request_type=session_api&queue_name=#{queue_name}&phone_number=#{message['agent_phone']}"
+        RestClient.get url
+      end
+      # Then the customer
+      url = APP_CONFIG['tropo']['url'] + "&request_type=session_api&queue_name=#{queue_name}&phone_number=#{session.phone_number}"
+      RestClient.get url
     end
   end
 end

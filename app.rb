@@ -38,7 +38,8 @@ post '/start.json' do
              :channel         => 'VOICE',
              :timeout         => 30,
              :answer_on_media => false })
-      conference :id => tropo_event.session.parameters.queue_name, :name => 'SocialQ'
+      say 'We are about to connect you, please wait.'
+      conference :id => tropo_event.session.parameters.queue_name, :name => 'SocialQ', :beep => false
     end
     tropo.response
   else
@@ -48,7 +49,7 @@ post '/start.json' do
       time = Time.now.to_i.to_s
       tropo = Tropo::Generator.new do
         say 'Thank you for calling, please wait while we find an agent for you.'
-        conference :id => time, :name => 'SocialQ', :sendTones => false
+        conference :id => time, :name => 'SocialQ', :sendTones => false, :beep => false
         #on :event => 'continue', :next => '/conferenced.json'
       end
       queue_message = tropo_event.merge!({ :queue_name => time })

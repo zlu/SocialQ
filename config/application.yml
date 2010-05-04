@@ -29,22 +29,21 @@ sinatra:
 agents:
     - name: John Doe
       uname: jdoe
-      phone_number: '+14157044517'
+      phone_number: '14153675082'
     - name: Jane Smith
       uname: jsmith
-      phone_number: '+14153675082'
+      phone_number: '14153675082'
       
 users:
     - name: Lenos Squirrel
-      #phone_number: '4157044517'
-      phone_number: jsgoecke
+      phone_number: '14157044517'
       twitter_user: LenosSquirrel
     # - name: Jason Goecke
     #   phone_number: jsgoecke
     #   twitter_user: jsgoecke
-    - name:
-      phone_number:
-      twitter_user:
+    - name: Ashton Kutcher
+      phone_number: jsgoecke
+      twitter_user: aplusk
 
 
 weight_rules:
