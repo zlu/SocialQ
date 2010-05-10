@@ -1,8 +1,8 @@
 rabbit_mq:
-    # Status URL:  http://rabbit0002:RbIEJfCuMc@ec2-67-202-42-147.compute-1.amazonaws.com:30002/
+    # Status URL:  http://rabbit0002:RbIEJfCuMc@us-east-1.beta.srs.cloud.rabbitmq.com:30002/
     user: rabbit0002
     pass: RbIEJfCuMc
-    host: ec2-67-202-42-147.compute-1.amazonaws.com
+    host: us-east-1.beta.srs.cloud.rabbitmq.com
     port: 15002
     vhost: /rabbit0002
     logging: false
