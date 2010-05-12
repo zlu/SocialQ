@@ -14,6 +14,8 @@ module SocialQ
       bunny.start
       
       @socialq = bunny.queue(params['socialq'])
+      @dumpq = bunny.queue(params['dumpq']) if params['dumpq']
+      
       @agentq = bunny.queue(params['agentq'])
       @callq = bunny.queue(params['callq'])
       @responseq = bunny.queue(params['callq'])
@@ -21,6 +23,7 @@ module SocialQ
   
     def publish_socialq(msg)
       @socialq.publish(msg)
+      @dumpq.publish(msg) if @dumpq
     end
     
     def read_socialq

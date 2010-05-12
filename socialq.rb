@@ -43,7 +43,7 @@ threads << Thread.new do
     session = nil
     message = JSON.parse msg[:payload]
     @socialq.users.each do |user|
-      session = user if user.guid == message['customer_guid']
+      session = user if user.customer_guid == message['customer_guid']
       break
     end
     

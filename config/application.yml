@@ -7,13 +7,14 @@ rabbit_mq:
     vhost: /rabbit0002
     logging: false
     socialq: socialq # Where we publish the Social Q messages
+    dumpq: dumpq # Used to send a replication of the socialq so we may easily capture scenarios generated, comment out to stop
     agentq: agentq # Where agent requests to take a call get passed
     callq: callq
     responseq: responseq
 
 tropo:
     # &queue_name=1234&request_type=session_api&queue_name='1234'&phone_number=14153675082
-    url: 'http://api.tropo.com/1.0/sessions?action=create&token=c2624fb3e36eb644802735e3607cb1a83f5dbff50969c0f65a73ddeabe3180a1abeb6c41494437753769cc63'
+    url: 'http://api.tropo.com/1.0/sessions?action=create&token=38473194d4e8c346b818ac1ca42aa06b9eb0558a764ed2e90a483758c8fe01534bc7d6755a728772f1cbdde2'
 twitter:
     username: squirrelrific
     password: squirrelsrock
@@ -24,7 +25,8 @@ twitter:
     klout_key: txqh6gfjgwmb6tytv7yvb54y
 
 sinatra:
-    port: 10917
+    #port: 10917
+    port: 4567
 
 agents:
     - name: John Doe
@@ -36,15 +38,14 @@ agents:
       
 users:
     - name: Lenos Squirrel
-      phone_number: '14157044517'
+      phone_number: '4074181800'
       twitter_user: LenosSquirrel
-    # - name: Jason Goecke
-    #   phone_number: jsgoecke
-    #   twitter_user: jsgoecke
+    - name: Squirrelrific
+      phone_number: '14153675082'
+      twitter_user: squirrelrific
     - name: Ashton Kutcher
       phone_number: jsgoecke
       twitter_user: aplusk
-
 
 weight_rules:
     phone: 10 # Arrived as a realtime phone request

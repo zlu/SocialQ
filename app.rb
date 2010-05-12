@@ -48,8 +48,11 @@ post '/start.json' do
     if tropo_event.session.from.channel == 'VOICE'
       time = Time.now.to_i.to_s
       tropo = Tropo::Generator.new do
+        on :event => 'leave', :next => '/hangup.json'
         say 'Thank you for calling, please wait while we find an agent for you.'
-        conference :id => time, :name => 'SocialQ', :sendTones => false, :beep => false
+        conference :id => time, :name => 'SocialQ', :sendTones => false, :beep => false, :choices => 'foo, bar' do
+          on :event => 'leave', :next => '/hangup.json'
+        end
         #on :event => 'continue', :next => '/conferenced.json'
       end
       queue_message = tropo_event.merge!({ :queue_name => time })
@@ -65,6 +68,10 @@ post '/error.json' do
   p Tropo::Generator.parse request.env["rack.input"].read
 end
 
+post '/hangup.json' do
+  p Tropo::Generator.parse request.env["rack.input"].read
+end
+
 # Section for dealing with RESTful Rabbit Interface
 get '/messages' do
   socialq = connect_to_rabbit('socialq')
@@ -73,6 +80,20 @@ get '/messages' do
   msg = nil
   while msg != :queue_empty
     msg = socialq.pop[:payload]
+    if msg != :queue_empty
+      messages << JSON.parse(msg)
+    end
+  end
+  messages.to_json
+end
+
+get '/scenario' do
+  dumpq = connect_to_rabbit('dumpq')
+  
+  messages = Array.new
+  msg = nil
+  while msg != :queue_empty
+    msg = dumpq.pop[:payload]
     if msg != :queue_empty
       messages << JSON.parse(msg)
     end
