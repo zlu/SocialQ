@@ -41,8 +41,10 @@ module SocialQ
       @semaphore.synchronize do
         user_to_delete = nil
         @users.each do |user|
-          user_to_delete = user if user.guid == guid
-          break
+          if user.guid == guid
+            user_to_delete = user
+            break
+          end
         end
         @users.delete(user_to_delete)
         publish_json
