@@ -7,6 +7,7 @@ This is a prototype backend application to power a Social Contact Center with Tw
 * Ruby 1.8.6+ or JRuby 1.4.0+
 * Tropo Account and Credentials
 * Amazon Web Services Account and Credentials for SQS
+* Bamboo Heroku Stack heroku http://docs.heroku.com/stack
 
 === Installing
 Coming soon
