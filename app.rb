@@ -38,7 +38,7 @@ post '/start.json' do
              :channel         => 'VOICE',
              :timeout         => 30,
              :answer_on_media => false })
-      say 'We are about to connect you, please wait.', :voice => 'jill'
+      say "Nous sommes sur le point de vous connecter, s'il vous plaît attendre.", :voice => 'florence'
       conference :id => tropo_event.session.parameters.queue_name, :name => 'SocialQ', :beep => false
     end
     tropo.response
@@ -49,7 +49,7 @@ post '/start.json' do
       time = Time.now.to_i.to_s
       tropo = Tropo::Generator.new do
         on :event => 'leave', :next => '/hangup.json'
-        say 'Thank you for calling, please wait while we find an agent for you.', :voice => 'jill'
+        say "Merci de votre appel, s'il vous plaît patienter pendant que nous trouver un agent pour vous.", :voice => 'florence'
         conference :id        => time, 
                    :name      => 'SocialQ', 
                    :sendTones => false, 
