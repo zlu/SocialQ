@@ -1,1 +1,3 @@
 tropo-webapi-ruby --version '>=0.1.7'
+sinatra --version '>=0.9.4'
+bunny --version '>=0.6.0'
