@@ -3,7 +3,7 @@
 config = YAML.load(File.open('../config/application.yml'))
 bunny = Bunny.new(:user    => 'rabbit0002',
                   :pass    => 'RbIEJfCuMc',
-                  :host    => 'ec2-67-202-42-147.compute-1.amazonaws.com',
+                  :host    => 'us-east-1.beta.srs.cloud.rabbitmq.com',
                   :port    => 15002,
                   :vhost   => '/rabbit0002',
                   :logging => true)

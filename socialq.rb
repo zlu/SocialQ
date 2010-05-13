@@ -41,6 +41,7 @@ threads << Thread.new do
     #     "agent_phone": "+14155551212"
     # }
     session = nil
+    p msg[:payload]
     message = JSON.parse msg[:payload]
     @socialq.users.each do |user|
       session = user if user.customer_guid == message['customer_guid']

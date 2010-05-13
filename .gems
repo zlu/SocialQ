@@ -1,2 +1,1 @@
-bunny --version '>=0.6.0'
-tropo-webapi-ruby --version '>=0.1.6'
+tropo-webapi-ruby --version '>=0.1.7'
