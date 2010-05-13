@@ -49,9 +49,8 @@ post '/start.json' do
       time = Time.now.to_i.to_s
       tropo = Tropo::Generator.new do
         on :event => 'leave', :next => '/hangup.json'
-        say 'Thank you for calling, please wait while we find an agent for you.'
+        say 'Thank you for calling, please wait while we find an agent for you.', :voice => 'jill'
         conference :id        => time, 
-                   :voice     => 'jill',
                    :name      => 'SocialQ', 
                    :sendTones => false, 
                    :beep      => false, 
