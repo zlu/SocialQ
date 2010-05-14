@@ -61,6 +61,7 @@ post '/start.json' do
       end
       queue_message = tropo_event.merge!({ :queue_name => time })
       callq.publish(queue_message.to_json)
+      p tropo.response
       tropo.response
     else
       callq.publish(tropo_event.to_json)
