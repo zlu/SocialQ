@@ -39,10 +39,9 @@ threads << Thread.new do
     # {
     #     "customer_guid": "5f43ae91-0ee3-4e42-b23a-7c3f636fc355",
     #     "agent_phone": "+14155551212",
-    #     "type": "phone" # (or tweet)
+    #     "action": "phone" # (or tweet)
     # }
     session = nil
-    p msg[:payload]
     message = JSON.parse msg[:payload]
     
     # Now we need to find the corresponding User in our User array matching on GUID
@@ -54,7 +53,7 @@ threads << Thread.new do
     end
     
     # Only call them if that is what the agent wants, as they may have responded with a tweet and that is good enough
-    if message['action'] == 'call'
+    if message['action'] == 'phone'
       if session && session.channel == 'phone'
         
         # Customer is already in the conference, so lets just connect the agent
