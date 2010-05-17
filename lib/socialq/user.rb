@@ -1,6 +1,8 @@
 module SocialQ  
   class User
     
+    ##
+    # Provides the class for interacting with the Topsy/OtterAPI to build some of the social profile detail
     class Topsy
       include HTTParty
     
@@ -14,6 +16,9 @@ module SocialQ
       end
     end
     
+    ##
+    # Provides the class for looking up Twitter account IDs via the Twitter API
+    # This should be switched from HTTP Basic Auth to Oauth before June 1, 2010
     class Twitter
       include HTTParty
     
@@ -30,6 +35,9 @@ module SocialQ
       end
     end
     
+    ##
+    # We use the oberservable pattern to notify watchers of an object change, in order to dump the state
+    # change to a JSON document
     include Observable
         
     attr_reader :guid,
@@ -107,7 +115,9 @@ module SocialQ
     private
     
     ##
+    # Gets the Social influence details from both Topsy and Klout, although right now we only use Klout
     #
+    # @return [Hash] either returns a has of the Klout or 'Not Found' if not in the Klout database
     def get_social_influence
       author_info = Topsy::author_info @twitter_user      
       klout_info = JSON.parse(RestClient.get("http://api.klout.com/1/users/show.json?key=#{@klout_key}&users=#{@twitter_user}").body)
@@ -119,7 +129,9 @@ module SocialQ
     end
     
     ##
+    # Calculates the initial queue weight of the user
     #
+    # @return nil
     def calc_initial_weight
       @queue_weight = 0
       @queue_weight = @klout['score']['kscore'] * @weight_rules['influence'] if @klout['score']
@@ -128,6 +140,8 @@ module SocialQ
     end
     
     ##
+    # Launches the Twitter listener watching for keywords in a user's stream. This is a thread that will be killed
+    # once the user leaves the queue when answered or tweeted to.
     #
     # @return nil
     def launch_twitter_listener
@@ -141,6 +155,9 @@ module SocialQ
     end
     
     ##
+    # Recalculates the queue weight based on when a user tweets a watchword, then notifies any observers
+    # that the object has changed so that they may dump a new JSON document with the appropriate state change 
+    # details, in this case the queue weight
     #
     # @return nil
     def twitter_alert!(watchword)

@@ -63,11 +63,17 @@ module SocialQ
       end
     end
     
+    ##
     # Called by the observer if we see a change to render the JSON to the queue, since we had an update
     def update
       self.publish_json
     end
     
+    ##
+    # Creates the appropriate objects and then converts to JSON and dumps them to the SocialQ
+    # This gets triggered any time there is a state change in the document
+    #
+    # @return [Hash] contains the resulting Ruby hash of the built document dumped to the Queue/JSON
     def publish_json
       user_array = []
       @users.each do |user|

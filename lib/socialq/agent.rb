@@ -1,3 +1,5 @@
+# We created this if we wanted to manage Agents on the server side, but we don't really do that so this file is more
+# of a holding place for future functionality
 module SocialQ
   require 'aasm'
   class Agent

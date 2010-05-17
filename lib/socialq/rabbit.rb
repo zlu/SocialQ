@@ -4,6 +4,10 @@ module SocialQ
     
     attr_reader :agentq, :callq
     
+    ##
+    # Sets up the connections to the appropriate queues using Bunny to RabbitMQ
+    #
+    # @return nil
     def initialize(params)
       bunny = Bunny.new(:user    => params['user'],
                         :pass    => params['pass'],
@@ -21,11 +25,20 @@ module SocialQ
       @responseq = bunny.queue(params['callq'])
     end
   
+    ##
+    # Publishes a JSON document to the message queues
+    #
+    # @params [String] a JSON document to publish to the messages queues
+    # @return nil
     def publish_socialq(msg)
       @socialq.publish(msg)
       @dumpq.publish(msg) if @dumpq
     end
     
+    ##
+    # Reads the social queue and returns the JSON document
+    #
+    # @return [String] the last message from the message queue
     def read_socialq
       @socialq.pop[:payload]
     end

@@ -38,35 +38,45 @@ threads << Thread.new do
     # We are expecting a JSON document like this:
     # {
     #     "customer_guid": "5f43ae91-0ee3-4e42-b23a-7c3f636fc355",
-    #     "agent_phone": "+14155551212"
+    #     "agent_phone": "+14155551212",
+    #     "type": "phone" # (or tweet)
     # }
     session = nil
     p msg[:payload]
     message = JSON.parse msg[:payload]
+    
+    # Now we need to find the corresponding User in our User array matching on GUID
     @socialq.users.each do |user|
-      session = user if user.customer_guid == message['customer_guid']
-      break
+      if user.guid == message['customer_guid']
+        session = user
+        break
+      end
     end
     
     # Only call them if that is what the agent wants, as they may have responded with a tweet and that is good enough
     if message['action'] == 'call'
       if session && session.channel == 'phone'
+        
         # Customer is already in the conference, so lets just connect the agent
         url = APP_CONFIG['tropo']['url'] + "&request_type=session_api&queue_name=#{session.queue_name}&phone_number=#{message['agent_phone']}"
         RestClient.get url
       elsif session && session.channel == 'twitter'
+        
         # Since this originated as a Tweet, we need to connect both the user and the agent in the same Q
         queue_name = Time.now.to_i.to_s
+        
         # First the agent
         Thread.new do
           url = APP_CONFIG['tropo']['url'] + "&request_type=session_api&queue_name=#{queue_name}&phone_number=#{message['agent_phone']}"
           RestClient.get url
         end
+        
         # Then the customer
         url = APP_CONFIG['tropo']['url'] + "&request_type=session_api&queue_name=#{queue_name}&phone_number=#{session.phone_number}"
         RestClient.get url
       end
     end
+    
     # Delete the user from queue
     @socialq.delete_user(session.guid)
   end
@@ -78,6 +88,7 @@ threads << Thread.new do
     p 'CallQ message received!'
     tropo_event = JSON.parse msg[:payload]
     if tropo_event['session']['from']['channel'] == 'VOICE'
+      
       # Need to find the corresponding Twitter ID based on CallerID
       twitter_user = nil
       APP_CONFIG['users'].each do |user|
@@ -86,6 +97,7 @@ threads << Thread.new do
           break
         end
       end
+      
       # Create the user
       @socialq.add_user SocialQ::User.new({ :twitter_user     => twitter_user,
                                             :phone_number     => tropo_event['session']['from']['id'],
@@ -97,6 +109,7 @@ threads << Thread.new do
                                             :weight_rules     => APP_CONFIG['weight_rules'],
                                             :queue_name       => tropo_event['queue_name'] })
     else
+      
       # Need to find the corresponding Phone # based on Twitter ID
       phone_number = nil
       APP_CONFIG['users'].each do |user|
@@ -105,6 +118,7 @@ threads << Thread.new do
           break
         end
       end
+      
       # Create the user
       @socialq.add_user SocialQ::User.new({ :twitter_user     => tropo_event['session']['from']['id'],
                                             :phone_number     => phone_number,
