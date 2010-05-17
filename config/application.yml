@@ -38,14 +38,14 @@ agents:
       
 users:
     - name: Lenos Squirrel
-      phone_number: '4074181800'
+      phone_number: '9166002497'
       twitter_user: LenosSquirrel
     - name: Squirrelrific
-      phone_number: '14153675082'
+      phone_number: '3055195825'
       twitter_user: squirrelrific
-    - name: Ashton Kutcher
+    - name: Heidi Squirrel
       phone_number: jsgoecke
-      twitter_user: aplusk
+      twitter_user: heidi_squirrel
 
 weight_rules:
     phone: 10 # Arrived as a realtime phone request
