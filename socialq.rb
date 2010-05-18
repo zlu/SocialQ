@@ -2,7 +2,7 @@ $: << File.expand_path(File.dirname(__FILE__))
 %w(rubygems json lib/socialq tropo-webapi-ruby restclient).each { |lib| require lib }
 
 # Load configuration
-APP_CONFIG = YAML.load(File.open('config/application.yml'))
+APP_CONFIG = YAML.load(File.open(File.expand_path(File.dirname(__FILE__) + '/config/application.yml')))
 # Start the logger
 @log = Logger.new(STDOUT)
 @log.level = Logger::DEBUG
