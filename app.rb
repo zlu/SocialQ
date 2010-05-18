@@ -48,14 +48,13 @@ post '/start.json' do
     if tropo_event.session.from.channel == 'VOICE'
       time = Time.now.to_i.to_s
       tropo = Tropo::Generator.new do
-        on :event => 'leave', :next => '/hangup.json'
+        on :event => 'hangup', :next => '/hangup.json'
         say "Merci de votre appel, s'il vous plaît patienter pendant que nous trouver un agent pour vous.", :voice => 'florence'
         conference :id        => time, 
                    :name      => 'SocialQ', 
                    :sendTones => false, 
                    :beep      => false, 
-                   :choices   => 'foo, bar' do
-          on :event => 'leave', :next => '/hangup.json'
+                   :choices   => 'foo, bar'
         end
         #on :event => 'continue', :next => '/conferenced.json'
       end
