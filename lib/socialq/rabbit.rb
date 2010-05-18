@@ -9,12 +9,14 @@ module SocialQ
     #
     # @return nil
     def initialize(params)
+      bunny_logfile = File.expand_path(File.dirname(__FILE__) + '../../../' + params['log_file'])
       bunny = Bunny.new(:user    => params['user'],
                         :pass    => params['pass'],
                         :host    => params['host'],
                         :port    => params['port'],
                         :vhost   => params['vhost'],
-                        :logging => params['logging'])
+                        :logging => params['logging'],
+                        :logfile => bunny_logfile)
       bunny.start
       
       @socialq = bunny.queue(params['socialq'])
@@ -24,7 +26,7 @@ module SocialQ
       @callq = bunny.queue(params['callq'])
       @responseq = bunny.queue(params['callq'])
     end
-  
+
     ##
     # Publishes a JSON document to the message queues
     #

@@ -9,32 +9,30 @@ APP_CONFIG = YAML.load(File.open(File.expand_path(File.dirname(__FILE__) + '/con
 @log.info 'Starting SocialQ'
 
 @socialq = SocialQ::SessionQueue.new(APP_CONFIG['rabbit_mq'])
-bunny_logfile = File.expand_path(File.dirname(__FILE__) + '/' + APP_CONFIG['rabbit_mq']['log_file'])
-bunny_agentq = Bunny.new(:user    => APP_CONFIG['rabbit_mq']['user'],
-                         :pass    => APP_CONFIG['rabbit_mq']['pass'],
-                         :host    => APP_CONFIG['rabbit_mq']['host'],
-                         :port    => APP_CONFIG['rabbit_mq']['port'],
-                         :vhost   => APP_CONFIG['rabbit_mq']['vhost'],
-                         :logging => APP_CONFIG['rabbit_mq']['logging'],
-                         :logfile => bunny_logfile)
 
-bunny_callq = Bunny.new(:user    => APP_CONFIG['rabbit_mq']['user'],
-                        :pass    => APP_CONFIG['rabbit_mq']['pass'],
-                        :host    => APP_CONFIG['rabbit_mq']['host'],
-                        :port    => APP_CONFIG['rabbit_mq']['port'],
-                        :vhost   => APP_CONFIG['rabbit_mq']['vhost'],
-                        :logging => APP_CONFIG['rabbit_mq']['logging'],
-                        :logfile => bunny_logfile)
-bunny_agentq.start
-bunny_callq.start
-
-agentq = bunny_agentq.queue(APP_CONFIG['rabbit_mq']['agentq'])
-callq = bunny_callq.queue(APP_CONFIG['rabbit_mq']['callq'])
+##
+# Connects to the RabbitMQ instance specified
+#
+# @params [String] the name of the queue to connect to
+# @return [Object] a handle to the queue specified
+def connect_bunny(queue)
+  bunny_logfile = File.expand_path(File.dirname(__FILE__) + '/' + APP_CONFIG['rabbit_mq']['log_file'])
+  bunny = Bunny.new(:user    => APP_CONFIG['rabbit_mq']['user'],
+                    :pass    => APP_CONFIG['rabbit_mq']['pass'],
+                    :host    => APP_CONFIG['rabbit_mq']['host'],
+                    :port    => APP_CONFIG['rabbit_mq']['port'],
+                    :vhost   => APP_CONFIG['rabbit_mq']['vhost'],
+                    :logging => APP_CONFIG['rabbit_mq']['logging'],
+                    :logfile => bunny_logfile)
+  bunny.start
+  bunny.queue(APP_CONFIG['rabbit_mq'][queue])
+end
 
 threads = []
 
 # Thread that watches for agents and their actions
 threads << Thread.new do
+  agentq = connect_bunny('agentq')
   agentq.subscribe do |msg|
     # We are expecting a JSON document like this:
     # {
@@ -86,6 +84,7 @@ end
 
 # Thread that watches for new calls coming in
 threads << Thread.new do
+  callq = connect_bunny('callq')
   callq.subscribe do |msg|
     tropo_event = JSON.parse msg[:payload]
     @log.info 'SocialQ message received!: ' + tropo_event.inspect
@@ -134,6 +133,16 @@ threads << Thread.new do
                                             :weight_rules     => APP_CONFIG['weight_rules'],
                                             :queue_name       => 'twitter' })
     end
+  end
+end
+
+# Thread that watches for resets
+threads << Thread.new do
+  resetq = connect_bunny('resetq')
+  resetq.subscribe do |msg|
+    @log.info '+'*10
+    @log.info msg[:payload]
+    @log.info '+'*10
   end
 end
 

@@ -116,6 +116,11 @@ post '/agent_ready' do
   agentq.publish(request.env["rack.input"].read)
 end
 
+post '/reset' do
+  resetq = connect_to_rabbit('resetq')
+  resetq.publish(request.env["rack.input"].read)
+end
+
 get '/test' do
   { :foo => 'bar' }.to_json
 end

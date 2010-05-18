@@ -14,6 +14,7 @@ rabbit_mq:
     dumpq: dumpq # Used to send a replication of the socialq so we may easily capture scenarios generated, comment out to stop
     agentq: agentq # Where agent requests to take a call get passed
     callq: callq
+    resetq: resetq
     responseq: responseq
 
 tropo:
