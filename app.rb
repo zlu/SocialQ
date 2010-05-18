@@ -55,8 +55,6 @@ post '/start.json' do
                    :sendTones => false, 
                    :beep      => false, 
                    :choices   => 'foo, bar'
-        end
-        #on :event => 'continue', :next => '/conferenced.json'
       end
       queue_message = tropo_event.merge!({ :queue_name => time })
       callq.publish(queue_message.to_json)
