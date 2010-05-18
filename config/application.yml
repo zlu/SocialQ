@@ -1,3 +1,6 @@
+logging:
+    file: log/socialq.log
+
 rabbit_mq:
     # Status URL:  http://rabbit0002:RbIEJfCuMc@us-east-1.beta.srs.cloud.rabbitmq.com:30002/
     user: rabbit0002
@@ -5,7 +8,8 @@ rabbit_mq:
     host: us-east-1.beta.srs.cloud.rabbitmq.com
     port: 15002
     vhost: /rabbit0002
-    logging: false
+    logging: true
+    log_file: log/bunny.log
     socialq: socialq # Where we publish the Social Q messages
     dumpq: dumpq # Used to send a replication of the socialq so we may easily capture scenarios generated, comment out to stop
     agentq: agentq # Where agent requests to take a call get passed
