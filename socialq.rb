@@ -4,19 +4,19 @@ $: << File.expand_path(File.dirname(__FILE__))
 # Load configuration
 APP_CONFIG = YAML.load(File.open(File.expand_path(File.dirname(__FILE__) + '/config/application.yml')))
 # Start the logger
-@log = Logger.new(APP_CONFIG['logging']['file'])
+@log = Logger.new(File.expand_path(File.dirname(__FILE__) + '/' + APP_CONFIG['logging']['file']))
 @log.level = Logger::DEBUG
 @log.info 'Starting SocialQ'
 
 @socialq = SocialQ::SessionQueue.new(APP_CONFIG['rabbit_mq'])
-
+bunny_logfile = File.expand_path(File.dirname(__FILE__) + '/' + APP_CONFIG['rabbit_mq']['log_file'])
 bunny_agentq = Bunny.new(:user    => APP_CONFIG['rabbit_mq']['user'],
                          :pass    => APP_CONFIG['rabbit_mq']['pass'],
                          :host    => APP_CONFIG['rabbit_mq']['host'],
                          :port    => APP_CONFIG['rabbit_mq']['port'],
                          :vhost   => APP_CONFIG['rabbit_mq']['vhost'],
                          :logging => APP_CONFIG['rabbit_mq']['logging'],
-                         :logfile => APP_CONFIG['rabbit_mq']['log_file'])
+                         :logfile => bunny_logfile)
 
 bunny_callq = Bunny.new(:user    => APP_CONFIG['rabbit_mq']['user'],
                         :pass    => APP_CONFIG['rabbit_mq']['pass'],
@@ -24,7 +24,7 @@ bunny_callq = Bunny.new(:user    => APP_CONFIG['rabbit_mq']['user'],
                         :port    => APP_CONFIG['rabbit_mq']['port'],
                         :vhost   => APP_CONFIG['rabbit_mq']['vhost'],
                         :logging => APP_CONFIG['rabbit_mq']['logging'],
-                        :logfile => APP_CONFIG['rabbit_mq']['log_file'])
+                        :logfile => bunny_logfile)
 bunny_agentq.start
 bunny_callq.start
 
