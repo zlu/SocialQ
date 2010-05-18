@@ -52,6 +52,17 @@ module SocialQ
     end
     
     ##
+    # Deletes all users from the User object
+    #
+    # @return nil
+    def reset_users
+      @semaphore.synchronize do
+        @users = []
+        publish_json
+      end
+    end
+    
+    ##
     # Adds an agent to the @agents list
     #
     # @param [Object] agent to deleted from the queue

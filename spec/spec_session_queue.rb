@@ -67,4 +67,23 @@ describe SocialQ::SessionQueue do
     end
     user.should == nil
   end
+  
+  it 'should delete all users from the user object' do
+    session_queue = nil
+    %w(johndoe janedoe).each do |user|
+      session_queue = SocialQ::SessionQueue.new(@config['rabbit_mq'])
+      session_queue.add_user SocialQ::User.new({ :twitter_user       => user,
+                                                 :phone_number       => '+14155551212',
+                                                 :channel            => 'twitter',
+                                                 :twitter_username   => @config['twitter']['username'],
+                                                 :twitter_password   => @config['twitter']['password'],
+                                                 :twitter_keywords   => @config['twitter']['keywords'],
+                                                 :klout_key          => @config['twitter']['klout_key'],
+                                                 :weight_rules       => @config['weight_rules'],
+                                                 :queue_name         => '1234' })
+    end
+    session_queue.users.length.should == 1
+    session_queue.reset_users
+    session_queue.users.length.should == 0
+  end
 end

@@ -140,9 +140,8 @@ end
 threads << Thread.new do
   resetq = connect_bunny('resetq')
   resetq.subscribe do |msg|
-    @log.info '+'*10
-    @log.info msg[:payload]
-    @log.info '+'*10
+    request = JSON.parse msg[:payload]
+    @socialq.reset_users if request['action'] == 'reset'
   end
 end
 
