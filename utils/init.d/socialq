@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+# description:  Used to start and stop SocialQ daemon
+ 
+APP_NAME = "Socialq"
+@default_options = {
+  :app_dir => '/opt/SocialQ',
+  :pid_file => '/opt/SocialQ/tmp/socialq.pid' 
+}
+ 
+def start_app
+  puts "Starting #{@default_options[:app_dir]}"
+  system("/usr/bin/ruby #{@default_options[:app_dir]}/socialq.rb 2>&1 >> /dev/null & echo $! > #{@default_options[:pid_file]} &")
+end
+ 
+def stop_app
+  pid = File.read(@default_options[:pid_file])
+  puts "Stopping #{APP_NAME} with pid #{pid}"
+  begin
+    Process.kill(9, pid.to_i)
+  rescue => err
+    puts err
+  end
+end
+ 
+case ARGV.first
+  #when 'status'
+  #TBD
+  #puts "Status of #{APP_NAME} is unknown"
+  when 'start'
+    start_app 
+  when 'stop'
+    stop_app 
+  when 'restart'
+    stop_app
+    start_app 
+end 
+ 
+unless %w{start stop restart}.include? ARGV.first
+  puts "Usage: #{APP_NAME} {start|stop|restart}"
+  exit
+end
