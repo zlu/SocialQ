@@ -36,7 +36,6 @@ threads = []
 # Thread that watches for agents and their actions
 threads << Thread.new do
   agentq.subscribe do |msg|
-    p 'AgentQ message received!'
     # We are expecting a JSON document like this:
     # {
     #     "customer_guid": "5f43ae91-0ee3-4e42-b23a-7c3f636fc355",
@@ -45,6 +44,8 @@ threads << Thread.new do
     # }
     session = nil
     message = JSON.parse msg[:payload]
+    @log.info 'AgentQ message received!: ' + message.inspect
+    @log.info '*'*10
     
     # Now we need to find the corresponding User in our User array matching on GUID
     @socialq.users.each do |user|
@@ -86,8 +87,10 @@ end
 # Thread that watches for new calls coming in
 threads << Thread.new do
   callq.subscribe do |msg|
-    p 'CallQ message received!'
     tropo_event = JSON.parse msg[:payload]
+    @log.info 'SocialQ message received!: ' + tropo_event.inspect
+    @log.info '*'*10
+    
     if tropo_event['session']['from']['channel'] == 'VOICE'
       
       # Need to find the corresponding Twitter ID based on CallerID
