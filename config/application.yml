@@ -18,8 +18,13 @@ rabbit_mq:
     responseq: responseq
 
 tropo:
+    # http://tropo.com
+    # Username: orange_labs
+    # Password: orangerox
     # &queue_name=1234&request_type=session_api&queue_name='1234'&phone_number=14153675082
     url: 'http://api.tropo.com/1.0/sessions?action=create&token=38473194d4e8c346b818ac1ca42aa06b9eb0558a764ed2e90a483758c8fe01534bc7d6755a728772f1cbdde2'
+
+# Should be TogetherMore and will need to switch to OAuth from HTTP Basic
 twitter:
     username: squirrelrific
     password: squirrelsrock

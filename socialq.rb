@@ -53,6 +53,9 @@ threads << Thread.new do
       end
     end
     
+    # This scenario may occur if running in 'semi-live' mode and no agents actually exist
+    break if session.nil?
+    
     # Only call them if that is what the agent wants, as they may have responded with a tweet and that is good enough
     if message['action'] == 'phone'
       if session && session.channel == 'phone'

@@ -1,5 +1,5 @@
 $: << File.expand_path(File.dirname(__FILE__))
-%w(rubygems logger).each { |lib| require lib }
+%w(rubygems logger restclient).each { |lib| require lib }
 
 # Load the configuration
 APP_CONFIG = YAML.load(File.open('config/application.yml'))
@@ -58,7 +58,6 @@ post '/start.json' do
       end
       queue_message = tropo_event.merge!({ :queue_name => time })
       callq.publish(queue_message.to_json)
-      p tropo.response
       tropo.response
     else
       callq.publish(tropo_event.to_json)
@@ -120,4 +119,8 @@ end
 
 get '/test' do
   { :foo => 'bar' }.to_json
+end
+
+get '/scenario_app' do
+  
 end
