@@ -7,9 +7,9 @@
 		%h3 Scenario #{@scenario}
 		- @messages.each_with_index do |msg, index|
 			%a{:href=>"/posts/#{index}", :data => { :message => msg }} Message #{index + 1}
-		%p
-		%p
+		%br
+		%br
 		%h3 Additional Links
 		%a{:href=>"/scenarios"} Back to Scenarios
-		%p
+		%br
 		%a{:href=>"/reset"} Reset SocialQ
