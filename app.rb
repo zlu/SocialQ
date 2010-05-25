@@ -180,3 +180,11 @@ get '/load_scenario/:scenario' do |scenario|
   collection.find.each { |doc| @results << doc }
   haml :scenario_loaded
 end
+
+get '/collection/:collection' do |collection|
+  db = connect_to_mongo
+  collection = db.collection('socialq_scenarios')
+  @results = []
+  collection.find.each { |doc| @results << doc }
+  @results.inspect
+end
