@@ -136,6 +136,7 @@ end
 
 get '/scenarios' do
   @scenarios = fetch_scenarios
+  @@log.info @scenarios.inspect
   haml :scenarios
 end
 
