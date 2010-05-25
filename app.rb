@@ -43,6 +43,20 @@ def fetch_scenarios
   scenarios[0]
 end
 
+def get_dump
+  socialq = connect_to_rabbit('socialq')
+  
+  messages = Array.new
+  msg = nil
+  while msg != :queue_empty
+    msg = socialq.pop[:payload]
+    if msg != :queue_empty
+      messages << JSON.parse(msg)
+    end
+  end
+  messages
+end
+
 # Section or dealng wth Tropo WebAPI
 post '/start.json' do
   tropo_event = Tropo::Generator.parse request.env["rack.input"].read
@@ -106,17 +120,7 @@ get '/messages' do
 end
 
 get '/dump' do
-  dumpq = connect_to_rabbit('dumpq')
-  
-  messages = Array.new
-  msg = nil
-  while msg != :queue_empty
-    msg = dumpq.pop[:payload]
-    if msg != :queue_empty
-      messages << JSON.parse(msg)
-    end
-  end
-  messages.to_json
+  get_dump.to_json
 end
 
 post '/publish_message' do
@@ -167,12 +171,12 @@ end
 # Used to fetch messages from the dump q and add them as a scenario when given a name
 get '/load_scenario/:scenario' do |scenario|
   @scenario = scenario
-  messages = RestClient.get 'http://socialq.heroku.com/dump'
+  messages = get_dump
   
   db = connect_to_mongo
   collection = db.collection('socialq_scenarios')
   collection.remove
-  collection.insert({ @scenario.to_sym => JSON.parse(messages.body) })
+  collection.insert({ @scenario.to_sym => JSON.parse(messages) })
   @results = []
   collection.find.each { |doc| @results << doc }
   haml :scenario_loaded
