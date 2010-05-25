@@ -38,7 +38,7 @@ def fetch_scenarios
   collection = db.collection('socialq_scenarios')  
   scenarios = []
   collection.find.each { |doc| scenarios << doc }
-  scenarios.delete('_id')
+  scenarios.delete!('_id')
   scenarios
 end
 
