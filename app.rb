@@ -39,11 +39,7 @@ def fetch_scenarios
   scenarios = []
   collection.find.each { |doc| scenarios << doc }
   scenarios.delete('_id')
-  scenarios.inspect
-end
-
-get '/foobar' do
-  fetch_scenarios
+  scenarios
 end
 
 # Section or dealng wth Tropo WebAPI
