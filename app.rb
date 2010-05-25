@@ -1,5 +1,5 @@
 $: << File.expand_path(File.dirname(__FILE__))
-%w(rubygems logger restclient haml uri).each { |lib| require lib }
+%w(rubygems logger restclient haml uri mongo).each { |lib| require lib }
 
 # Load the configuration
 APP_CONFIG = YAML.load(File.open('config/application.yml'))
