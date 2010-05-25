@@ -42,6 +42,10 @@ def fetch_scenarios
   scenarios
 end
 
+get '/foobar' do
+  fetch_scenarios
+end
+
 # Section or dealng wth Tropo WebAPI
 post '/start.json' do
   tropo_event = Tropo::Generator.parse request.env["rack.input"].read
