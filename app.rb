@@ -38,10 +38,10 @@ def fetch_scenarios
   collection = db.collection('socialq_scenarios')  
   scenarios = []
   collection.find.each { |doc| scenarios << doc }
-  scenarios.delete('_id')
+  scenarios[0].delete('_id')
   @@log.info scenarios.inspect
   @@log.info '*'*10
-  scenarios
+  scenarios[0]
 end
 
 # Section or dealng wth Tropo WebAPI
