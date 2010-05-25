@@ -35,9 +35,10 @@ def connect_to_rabbit(queue)
 end
 
 # Setup Mongo connection
-#uri = URI.parse(ENV['MONGOHQ_URL'])
+# uri = URI.parse(ENV['MONGOHQ_URL'])
+# conn = Mongo::Connection.from_uri(ENV['MONGOHQ_URL'])
 uri = URI.parse('mongodb://app194820:qpjea6xmtm386zfac531is@flame.local.mongohq.com:27059/app194820')
-conn = Mongo::Connection.from_uri(ENV['MONGOHQ_URL'])
+conn = Mongo::Connection.from_uri('mongodb://app194820:qpjea6xmtm386zfac531is@flame.local.mongohq.com:27059/app194820')
 @@db = conn.db(uri.path.gsub(/^\//, ''))
 
 # Section or dealng wth Tropo WebAPI
