@@ -7,7 +7,7 @@ APP_CONFIG = YAML.load(File.open('config/application.yml'))
 # Start the logger
 @log = Logger.new(STDOUT)
 @log.level = Logger::DEBUG
-@log.info 'Starting SocialQ'
+@log.info 'Starting SocialQ Sinatra App'
 
 %w(sinatra tropo-webapi-ruby bunny json).each { |lib| require lib }
 
@@ -38,6 +38,7 @@ def fetch_scenarios
   collection = db.collection('socialq_scenarios')  
   scenarios = []
   collection.find.each { |doc| scenarios << doc }
+  @log.info scenarios.inspect
   scenarios = scenarios.delete('_id')
   scenarios
 end
