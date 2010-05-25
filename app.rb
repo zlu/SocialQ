@@ -169,5 +169,5 @@ get '/load_scenario' do
   # results = []
   # collection.find.each { |doc| results << doc.inspect }
   # results.inspect
-  ENV['MONGOHQ_URL']
+  ENV.inspect
 end
