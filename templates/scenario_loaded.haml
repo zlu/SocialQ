@@ -1,0 +1,12 @@
+%html
+	%head
+		%title Orange SocialQ Scenario Publisher
+		%img(src="/images/orange-logo-400.jpg" align="left" alt="Orange" width="100" height="100")
+	%body
+		%h1 SocialQ Scenario Publisher
+		%h3 Scenario #{@scenario} Loaded!
+		%br
+		%h3 Messages:
+			#{@results.inspect}
+		%h3 Additional Links
+		%a{:href=>"/reset"} Reset SocialQ
