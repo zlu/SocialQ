@@ -38,6 +38,7 @@ def fetch_scenarios
   collection = db.collection('socialq_scenarios')  
   scenarios = []
   collection.find.each { |doc| scenarios << doc }
+  scenarios = scenarios.delete('_id')
   scenarios
 end
 
@@ -134,15 +135,18 @@ get '/reset' do
 end
 
 get '/scenarios' do
-  @scenarios = SCENARIOS
+  @scenarios = fetch_scenarios
   haml :scenarios
 end
 
 get '/scenario/:scenario' do |scenario|
   @scenario, session['scenario'] = scenario, scenario
+  scenarios = fetch_scenarios
   @possible_scenarios = ''
-  SCENARIOS.each { |k, v| @possible_scenarios += k + ' ' }
-  @messages = SCENARIOS[scenario]
+  scenarios.each { |k, v| 
+    @possible_scenarios += k + ' '
+  }
+  @messages = scenarios[scenario]
   
   if @messages
     haml :scenario
@@ -153,7 +157,8 @@ end
 
 get '/posts/:message_number' do |message_number|
   socialq = connect_to_rabbit('dumpq')
-  socialq.publish(SCENARIOS[session['scenario']][message_number.to_i].to_json)
+  scenarios = fetch_scenarios
+  socialq.publish(scenarios[session['scenario']][message_number.to_i].to_json)
   redirect "/scenario/#{session['scenario']}"
 end
 
