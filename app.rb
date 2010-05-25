@@ -176,7 +176,7 @@ get '/load_scenario/:scenario' do |scenario|
   db = connect_to_mongo
   collection = db.collection('socialq_scenarios')
   collection.remove
-  collection.insert({ @scenario.to_sym => JSON.parse(messages) })
+  collection.insert({ @scenario.to_sym => messages })
   @results = []
   collection.find.each { |doc| @results << doc }
   haml :scenario_loaded
