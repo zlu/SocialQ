@@ -164,12 +164,8 @@ get '/scenario/:scenario' do |scenario|
 end
 
 get '/posts/:message_number' do |message_number|
-  socialq = connect_to_rabbit('dumpq')
+  socialq = connect_to_rabbit('socialq')
   scenarios = fetch_scenarios
-  @@log.info scenarios
-  @@log.info '*'*10
-  @@log.info scenarios[session['scenario']][message_number.to_i].to_json
-  @@log.info '*'*10
   socialq.publish(scenarios[session['scenario']][message_number.to_i].to_json)
   redirect "/scenario/#{session['scenario']}"
 end
