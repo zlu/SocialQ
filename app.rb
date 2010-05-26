@@ -42,8 +42,7 @@ def fetch_scenarios
   scenarios.each_with_index do | scenario, index |
     scenarios[index].delete('_id')
   end
-  @@log.info scenarios.inspect
-  scenarios
+  scenarios[0]
 end
 
 def get_dump
