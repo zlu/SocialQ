@@ -44,9 +44,7 @@ def fetch_scenarios
   collection = db.collection(APP_CONFIG['mongo']['collection'])  
   scenarios = {}
   collection.find.each { |doc| scenarios.merge!(doc) }
-  scenarios.each_with_index do | scenario, index |
-    scenarios[index].delete('_id')
-  end
+  scenarios.delete('_id')
   @@log.info scenarios.inspect
   scenarios
 end
