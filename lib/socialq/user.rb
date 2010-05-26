@@ -79,6 +79,8 @@ module SocialQ
       @tweet_count           = 0
       @klout_key             = options[:klout_key]
       @social_influence_rank, @klout = get_social_influence
+      # Kout seems to be better, lets just use that throughout
+      @social_influecne_rank = @klout
       @queue_name            = options[:queue_name]
       
       # Calcuate the initial queue weight for this contact
