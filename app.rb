@@ -39,8 +39,10 @@ def fetch_scenarios
   collection = db.collection('socialq_scenarios')  
   scenarios = []
   collection.find.each { |doc| scenarios << doc }
-  scenarios[0].delete('_id')
-  scenarios[0]
+  scenarios.each_with_index do | scenario, index |
+    scenarios[index].delete('_id')
+  end
+  scenarios
 end
 
 def get_dump
