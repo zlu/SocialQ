@@ -42,17 +42,13 @@ end
 def fetch_scenarios
   db = connect_to_mongo
   collection = db.collection(APP_CONFIG['mongo']['collection'])  
-  scenarios = []
-  collection.find.each { |doc| scenarios << doc }
+  scenarios = {}
+  collection.find.each { |doc| scenarios.merge!(doc) }
   scenarios.each_with_index do | scenario, index |
     scenarios[index].delete('_id')
   end
   @@log.info scenarios.inspect
-  @@log.info '*'*10
-  @@log.info scenarios[0].inspect
-  @@log.info '*'*10
-  @@log.info scenarios[1].inspect
-  scenarios[0]
+  scenarios
 end
 
 def get_dump
