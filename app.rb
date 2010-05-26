@@ -195,3 +195,7 @@ get '/collection/:collection' do |collection|
   collection.find.each { |doc| @results << doc }
   @results.inspect
 end
+
+get '/mongo_url' do
+  ENV['MONGOHQ_URL']
+end
