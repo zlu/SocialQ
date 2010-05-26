@@ -42,6 +42,7 @@ def fetch_scenarios
   scenarios.each_with_index do | scenario, index |
     scenarios[index].delete('_id')
   end
+  @@log.info scenarios.inspect
   scenarios
 end
 
@@ -143,7 +144,6 @@ end
 
 get '/scenarios' do
   @scenarios = fetch_scenarios
-  @@log.info @scenarios.inspect
   haml :scenarios
 end
 
