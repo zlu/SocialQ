@@ -17,6 +17,10 @@ rabbit_mq:
     resetq: resetq
     responseq: responseq
 
+mongo:
+    collection: socialq_scenarios
+    url: mongodb://app194994:ctzghtw5fcu9tt7vpi1sbv@flame.local.mongohq.com:27061/app194994
+
 tropo:
     # http://tropo.com
     # Username: orange_labs

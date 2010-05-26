@@ -4,6 +4,8 @@ $: << File.expand_path(File.dirname(__FILE__))
 # Load the configuration
 APP_CONFIG = YAML.load(File.open('config/application.yml'))
 
+p APP_CONFIG['mongo']['collection']
+
 # Start the logger
 @@log = Logger.new(STDOUT)
 @@log.level = Logger::DEBUG
@@ -31,6 +33,8 @@ end
 def connect_to_mongo
   uri = URI.parse(ENV['MONGOHQ_URL'])
   conn = Mongo::Connection.from_uri(ENV['MONGOHQ_URL'])
+  # uri = URI.parse(APP_CONFIG['mongo']['url'])
+  # conn = Mongo::Connection.from_uri(APP_CONFIG['mongo']['url'])
   conn.db(uri.path.gsub(/^\//, ''))
 end
 
