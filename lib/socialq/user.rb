@@ -93,7 +93,7 @@ module SocialQ
       
       # Handle Twitter details
       twitter = Twitter.new(@twitter_username, @twitter_password)
-      @twitter_profile = twitter.get_user(options[:twitter_user])
+      @twitter_profile = twitter.get_user(options[:twitter_user].downcase)
       launch_twitter_listener
     end
     
