@@ -61,14 +61,16 @@ users:
       phone_number: jsgoecke
       twitter_user: heidi_squirrel
     - name: Arty Loud
-      phone_number: zhaoluus
+      phone_number: '6508982425'
       twitter_user: alphacusty
     - name: Pete Repeat
-      phone_number: plakias411
+      phone_number: '6504524257'
+      #phone_number: plakias411 
       twitter_user: repeatercusty
     - name: Lucy Look
       phone_number: '6508983130'
       twitter_user: watchercusty
+
       
 weight_rules:
     phone: 10 # Arrived as a realtime phone request
