@@ -47,7 +47,7 @@ def fetch_scenarios
 end
 
 def get_dump
-  socialq = connect_to_rabbit('socialq')
+  socialq = connect_to_rabbit('dumpq')
   
   messages = Array.new
   msg = nil
