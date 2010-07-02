@@ -192,6 +192,15 @@ get '/delete_scenario/:scenario' do |scenario|
   haml :scenario_deleted
 end
 
+get '/display_scenario/:scenario' do |scenario|
+  scenarios = fetch_scenarios
+  @possible_scenarios = ''
+  scenarios.each { |k, v| 
+    @possible_scenarios += k + ' '
+  }
+  scenarios[scenario].to_json
+end
+
 get '/collection/:collection' do |collection|
   collection = connect_to_mongo
   @results = []
